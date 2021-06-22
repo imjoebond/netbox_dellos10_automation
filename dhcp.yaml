@@ -1,0 +1,16 @@
+- name: "GATHER DATA FROM NETBOX"
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
+    netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
+  tasks:
+    - name: "GET interface WITH NB_QUERY"
+      set_fact:
+        mgmt_interfaces: "{{ query('netbox.netbox.nb_lookup', 'interfaces', 
+                api_filter='tag=ztd',
+                api_endpoint=netbox_url, token=netbox_token) }}"
+
+    - debug:
+        msg: "{{ mgmt_interfaces | json_query('[*].value.device') }}"
