@@ -4,5 +4,5 @@ Ansible Repo for Configuring DHCP and ZTD for Dell Switches with Netbox inventor
 ### Install dependencies
 
 
-`pip3 install -r requirements.txt`
+`pip3 install -r requirements.txt`  
 `ansible-galaxy install -r requirements.yml -p roles`
