@@ -7,9 +7,9 @@
       ztd_provision_url: "http://localhost/tftp/ztd.sh"
       os10_versions:
         - version: 10.5.1
-          ztd_provision_url: "http://172.16.135.2/tftpboot/ztd-10.5.1.sh"
+          ztd_provision_url: "http://172.16.135.2/tftpboot/ztd/ztd-10.5.1.sh"
         - version: 10.5.2
-          ztd_provision_url: "http://172.16.135.2/tftpboot/ztd-10.5.2.sh"
+          ztd_provision_url: "http://172.16.135.2/tftpboot/ztd/ztd-10.5.2.sh"
       os10_ztd_enabled: true
       isc_dhcp_config_dhcp: true
       isc_dhcp_scopes:
