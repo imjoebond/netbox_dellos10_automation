@@ -100,7 +100,7 @@ zone {{ item.zone }}.in-addr.arpa. {
 option ztd-provision-url code 240 = text;
 
 {% for os10_version in os10_versions %}
-#config for os10_version.version
+#config for {{ os10_version.version }}
 group {
   option ztd-provision-url "{{os10_version.ztd_provision_url}}";
 {% for mgmt_interface in mgmt_interfaces %}
