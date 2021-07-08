@@ -99,20 +99,23 @@ zone {{ item.zone }}.in-addr.arpa. {
 {%if os10_ztd_enabled%}
 option ztd-provision-url code 240 = text;
 
-
-group {
-  option ztd-provision-url "{{ztd_provision_url}}";
-
-  {% for mgmt_interface in mgmt_interfaces %}
-     
+{% for os10_version in os10_versions %}
+group {{os10_version.version}} {
+  option ztd-provision-url "{{os10_version.ztd_provision_url}}";
+{% for mgmt_interface in mgmt_interfaces %}
+{% for tag in mgmt_interface.value.tags %}
+{%if os10_version.version in tag.display %}
   host {{mgmt_interface.value.device.display }} {
     hardware ethernet {{ mgmt_interface.value.mac_address }};
     fixed-address {{ hostvars[mgmt_interface.value.device.display]['primary_ip4'] }};
   }
-    
-  {%endfor%}
+{%endif%}{%endfor%}{%endfor%}
 }
+{%endfor%}
 {%endif%}
+
+
+
 
 
 
