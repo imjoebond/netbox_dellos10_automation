@@ -4,12 +4,11 @@
   vars:
       netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
       netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
-      ztd_provision_url: "http://localhost/tftp/ztd.sh"
+      ztd_script_root: "http://scriptrepo.yourorg.com/tftp/ztd"
       os10_versions:
-        - version: 10.5.1
-          ztd_provision_url: "http://172.16.135.2/tftpboot/ztd/ztd-10.5.1.sh"
-        - version: 10.5.2
-          ztd_provision_url: "http://172.16.135.2/tftpboot/ztd/ztd-10.5.2.sh"
+       - dell_os10_10.5.1.0
+       - dell_os10_10.5.2.0
+       - dell_os10_10.5.2.2
       os10_ztd_enabled: true
       isc_dhcp_config_dhcp: true
       isc_dhcp_scopes:
