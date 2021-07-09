@@ -105,7 +105,7 @@ group {
   option ztd-provision-url "{{ztd_script_root}}/{{os10_version}}.sh";
 {% for mgmt_interface in mgmt_interfaces %}
 {% for tag in mgmt_interface.value.tags %}
-{%if os10_version is tag.display %}
+{%if os10_version in tag.display %}
   host {{mgmt_interface.value.device.display }} {
     hardware ethernet {{ mgmt_interface.value.mac_address }};
     fixed-address {{ hostvars[mgmt_interface.value.device.display]['primary_ip4'] }};
