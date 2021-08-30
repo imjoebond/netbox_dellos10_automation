@@ -25,3 +25,9 @@
         - /var/www/ztd/post_install_scripts
   roles:
     - role: nginx
+  post_tasks:
+    - name: "Link www to nginx root"
+      file:
+        src: /var/www/ztd
+        dest: /usr/share/nginx/html/ztd
+        state: link
