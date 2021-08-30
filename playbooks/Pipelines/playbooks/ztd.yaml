@@ -1,5 +1,6 @@
 - name: Infrastructure Services [ZTD server]
   hosts: us-east-dhcp*
+  become: true
   collections:
     - nginxinc.nginx_core
   gather_facts: true
@@ -12,11 +13,15 @@
        - dell_os10_10.5.2.0
        - dell_os10_10.5.2.2
   pre_tasks:
-    - name: "get management interfaces from netbox"
-      delegate_to: localhost
-      set_fact:
-        mgmt_interfaces: "{{ query('netbox.netbox.nb_lookup', 'interfaces', 
-                api_filter='tag=ztd',
-                api_endpoint=netbox_url, token=netbox_token) }}"
+    - name: "Create File Structure"
+      file:
+        path: "{{item}}"
+        state: directory
+        mode: '0755'
+      loop:
+        - /var/www
+        - /var/www/ztd
+        - /var/www/ztd/os10_scripts
+        - /var/www/ztd/post_install_scripts
   roles:
     - role: nginx
