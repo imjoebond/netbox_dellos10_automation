@@ -1,0 +1,22 @@
+- name: Infrastructure Services [ZTD server]
+  hosts: us-east-dhcp*
+  collections:
+    - nginxinc.nginx_core
+  gather_facts: true
+  vars:
+      netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
+      netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
+      ztd_script_root: "http://scriptrepo.yourorg.com/tftp/ztd"
+      os10_versions:
+       - dell_os10_10.5.1.0
+       - dell_os10_10.5.2.0
+       - dell_os10_10.5.2.2
+  pre_tasks:
+    - name: "get management interfaces from netbox"
+      delegate_to: localhost
+      set_fact:
+        mgmt_interfaces: "{{ query('netbox.netbox.nb_lookup', 'interfaces', 
+                api_filter='tag=ztd',
+                api_endpoint=netbox_url, token=netbox_token) }}"
+  roles:
+    - role: nginx
