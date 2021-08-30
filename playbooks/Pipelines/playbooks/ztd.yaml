@@ -9,10 +9,13 @@
       netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
       ztd_script_root: "http://scriptrepo.yourorg.com/tftp/ztd"
       os10_versions:
-       - dell_os10_10.5.1.0
-       - dell_os10_10.5.2.0
-       - dell_os10_10.5.2.2
-  pre_tasks:
+        - dell_os10_10.5.1.0:
+            binary: PKGS_OS10-Enterprise-10.5.1.0.124stretch-installer-x86_64.bin
+        - dell_os10_10.5.2.0: 
+            binary: PKGS_OS10-Enterprise-10.5.2.0.232stretch-installer-x86_64.bin
+        - dell_os10_10.5.2.2:
+            binary: PKGS_OS10-Enterprise-10.5.2.2.258stretch-installer-x86_64.bin
+  tasks:
     - name: "Create File Structure"
       file:
         path: "{{item}}"
@@ -21,8 +24,16 @@
       loop:
         - /var/www
         - /var/www/ztd
+        - /var/www/ztd/images
         - /var/www/ztd/os10_scripts
         - /var/www/ztd/post_install_scripts
+    
+    - name: "os10 scripts"
+      file:
+        path: "/var/www/ztd/os10_scripts/{{item.binary}}"
+        state: directory
+        mode: '0755'
+      with_items: "{{os10_versions}}"
   roles:
     - role: nginx
   post_tasks:
