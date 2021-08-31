@@ -33,14 +33,7 @@
         - "{{www_root}}/{{ztd_dir}}/{{ztd_scripts_dir}}"
         - "{{www_root}}/{{ztd_dir}}/{{post_install_scripts_dir}}"
     
-    - name: "create os10 script dirs"
-      file:
-        path: "/var/www/ztd/os10_scripts/{{item.version}}"
-        state: directory
-        mode: '0755'
-      with_items: "{{os10_versions}}"
-    
-    - name: config | Configuring DHCP Service
+    - name: config | Configuring ZTD Scripts
       template:
         src: templates/ztd/ztd.sh.j2
         dest: "/var/www/ztd/os10_scripts/{{item.version}}.sh"
