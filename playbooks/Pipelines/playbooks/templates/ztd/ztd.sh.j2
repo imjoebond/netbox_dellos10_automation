@@ -1,13 +1,9 @@
 #!/bin/bash
 
-ZTD_SERVER_IP="172.16.135.2"
+ZTD_SERVER_IP="{{hostvars[inventory_hostname]['ansible_default_ipv4']['address']}}"
 CGI_HOSTNAME_SCRIPT=/cgi-bin/catch_hostnames.sh
-ZTD_PATH=/tftpboot
 HOSTNAMES=hostnames.dyn
-IMAGE_PATH=/osimages
-OS_IMAGE={{item.binary}}
-#OS_IMAGE=PKGS_OS10-Enterprise-10.5.2.2.258stretch-installer-x86_64.bin
-POSTSCRIPT_PATH=/post_script
+
 POSTSCRIPT_FILE=post_script.sh
 CLI_CONF_FILE=cli_config
 CLI_CONF_PATH=/cli_config
@@ -15,21 +11,20 @@ TMP=/tmp/
 HOME=/home
 ZTD_LOGFILE=ztd.log
 LOG=$TMP$ZTD_LOGFILE
-APP="http://"
 CURL=`type -tP curl`
 
-IMG_FILE="$APP$ZTD_SERVER_IP$ZTD_PATH$IMAGE_PATH/$OS_IMAGE"
-CLI_CONFIG_FILE="$APP$ZTD_SERVER_IP$ZTD_PATH$CLI_CONF_PATH/$CLI_CONF_FILE"
+IMG_FILE="http://$ZTD_SERVER_IP/ztd/{{os10_images_dir}}/{{item.binary}}"
+CLI_CONFIG_FILE="http://$ZTD_SERVER_IP/$CLI_CONF_PATH/$CLI_CONF_FILE"
 
-POST_SCRIPT_FILE="$APP$ZTD_SERVER_IP$ZTD_PATH$POSTSCRIPT_PATH/$POSTSCRIPT_FILE"
+POST_SCRIPT_FILE="http://$ZTD_SERVER_IP/{{ztd_dir}}/${{post_install_scripts_dir}}/$POSTSCRIPT_FILE"
 
 ## Execute server side script that will fetch hostnames and mac mapping
-$CURL $APP$ZTD_SERVER_IP$CGI_HOSTNAME_SCRIPT
+$CURL http://$ZTD_SERVER_IP/{{ztd_dir}}/$CGI_HOSTNAME_SCRIPT
 
-echo "Request server side hostname mapping preperation :  $APP$ZTD_SERVER_IP$CGI_HOSTNAME_SCRIPT" >> $LOG
+echo "Request server side hostname mapping preperation :  http://$ZTD_SERVER_IP/{{ztd_dir}}/$CGI_HOSTNAME_SCRIPT" >> $LOG
 
 ## Download the file with hostname to mac mapping
-$CURL -o $HOME/$HOSTNAMES $APP$ZTD_SERVER_IP$ZTD_PATH/$HOSTNAMES
+$CURL -o $HOME/$HOSTNAMES http://$ZTD_SERVER_IP/{{ztd_dir}}/$HOSTNAMES
 
 echo "Retreived $HOSTNAMES from server and saved to $HOME/$HOSTNAMES" >> $LOG
 

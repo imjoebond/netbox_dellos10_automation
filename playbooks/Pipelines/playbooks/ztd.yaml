@@ -9,6 +9,10 @@
       netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
       ztd_script_root: "http://scriptrepo.yourorg.com/tftp/ztd"
       www_root: /var/www
+      ztd_dir: ztd
+      ztd_scripts_dir: os10_scripts
+      os10_images_dir: images
+      post_install_scripts_dir: post_install_scripts
       os10_versions:
         - version: dell_os10_10.5.1.0
           binary: PKGS_OS10-Enterprise-10.5.1.0.124stretch-installer-x86_64.bin
@@ -24,10 +28,10 @@
         mode: '0755'
       loop:
         - "{{www_root}}"
-        - "{{www_root}}/ztd"
-        - "{{www_root}}/ztd/images"
-        - "{{www_root}}/ztd/os10_scripts"
-        - "{{www_root}}/ztd/post_install_scripts"
+        - "{{www_root}}/{{ztd_dir}}"
+        - "{{www_root}}/{{ztd_dir}}/{{os10_images_dir}}"
+        - "{{www_root}}/{{ztd_dir}}/{{ztd_scripts_dir}}"
+        - "{{www_root}}/{{ztd_dir}}/{{post_install_scripts_dir}}"
     
     - name: "create os10 script dirs"
       file:
