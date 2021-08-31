@@ -51,7 +51,6 @@
         src: templates/ztd/hostmap.txt.j2
         dest: "/var/www/ztd/hostmap.txt"
         mode: '0755'
-      with_items: "{{os10_versions}}"
   roles:
     - role: nginx
   post_tasks:
