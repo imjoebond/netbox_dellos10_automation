@@ -20,6 +20,13 @@
           binary: PKGS_OS10-Enterprise-10.5.2.0.232stretch-installer-x86_64.bin
         - version: dell_os10_10.5.2.2
           binary: PKGS_OS10-Enterprise-10.5.2.2.258stretch-installer-x86_64.bin
+  pre_tasks:
+    - name: "get management interfaces from netbox"
+      delegate_to: localhost
+      set_fact:
+        mgmt_interfaces: "{{ query('netbox.netbox.nb_lookup', 'interfaces', 
+                api_filter='tag=ztd',
+                api_endpoint=netbox_url, token=netbox_token) }}"
   tasks:
     - name: "Create File Structure"
       file:
@@ -37,6 +44,12 @@
       template:
         src: templates/ztd/ztd.sh.j2
         dest: "/var/www/ztd/os10_scripts/{{item.version}}.sh"
+        mode: '0755'
+      with_items: "{{os10_versions}}"
+    - name: config | Configuring Hostmap file
+      template:
+        src: templates/ztd/hostmap.txt.j2
+        dest: "/var/www/ztd/hostmap.txt"
         mode: '0755'
       with_items: "{{os10_versions}}"
   roles:

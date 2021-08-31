@@ -1,0 +1,3 @@
+{% for mgmt_interface in mgmt_interfaces %}
+{{mgmt_interface.value.device.display }} {{ hostvars[mgmt_interface.value.device.display]['primary_ip4'] }}
+{%endfor%}
