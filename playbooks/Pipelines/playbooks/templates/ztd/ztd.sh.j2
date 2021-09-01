@@ -5,16 +5,14 @@ CGI_HOSTNAME_SCRIPT=/cgi-bin/catch_hostnames.sh
 HOSTNAMES=hostnames.dyn
 
 POSTSCRIPT_FILE=post_script.sh
-CLI_CONF_FILE=cli_config
-CLI_CONF_PATH=/cli_config
 TMP=/tmp/
 HOME=/home
 ZTD_LOGFILE=ztd.log
 LOG=$TMP$ZTD_LOGFILE
 CURL=`type -tP curl`
 
-IMG_FILE="http://$ZTD_SERVER_IP/ztd/{{os10_images_dir}}/{{item.binary}}"
-CLI_CONFIG_FILE="http://$ZTD_SERVER_IP/$CLI_CONF_PATH/$CLI_CONF_FILE"
+IMG_FILE="http://$ZTD_SERVER_IP/{{ztd_dir}}/{{os10_images_dir}}/{{item.binary}}"
+CLI_CONFIG_FILE="http://$ZTD_SERVER_IP/{{ztd_dir}}/{{cli_conf_path}}/cli_config"
 
 POST_SCRIPT_FILE="http://$ZTD_SERVER_IP/{{ztd_dir}}/${{post_install_scripts_dir}}/$POSTSCRIPT_FILE"
 
