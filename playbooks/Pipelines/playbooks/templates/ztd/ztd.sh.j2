@@ -14,7 +14,7 @@ CURL=`type -tP curl`
 IMG_FILE="http://$ZTD_SERVER_IP/{{ztd_dir}}/{{os10_images_dir}}/{{item.binary}}"
 CLI_CONFIG_FILE="http://$ZTD_SERVER_IP/{{ztd_dir}}/{{cli_conf_path}}/cli_config"
 
-POST_SCRIPT_FILE="http://$ZTD_SERVER_IP/{{ztd_dir}}/${{post_install_scripts_dir}}/$POSTSCRIPT_FILE"
+POST_SCRIPT_FILE="http://$ZTD_SERVER_IP/{{ztd_dir}}/${{post_install_scripts_dir}}/post_install.sh"
 
 ## Execute server side script that will fetch hostnames and mac mapping
 $CURL http://$ZTD_SERVER_IP/{{ztd_dir}}/$CGI_HOSTNAME_SCRIPT

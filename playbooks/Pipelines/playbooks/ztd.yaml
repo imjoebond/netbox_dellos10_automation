@@ -55,6 +55,12 @@
     
     - name: config | Configuring CLI Config file
       template:
+        src: templates/ztd/post_install.sh.j2
+        dest: "/var/www/ztd/{{post_install_scripts_dir}}/post_install.sh"
+        mode: '0755'
+
+    - name: config | Configuring CLI Config file
+      template:
         src: templates/ztd/cli_config.j2
         dest: "/var/www/ztd/{{cli_conf_path}}/cli_config"
         mode: '0755'
