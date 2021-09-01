@@ -4,7 +4,7 @@
   vars:
       netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
       netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
-      ztd_script_root: "http://scriptrepo.yourorg.com/tftp/ztd"
+      ztd_script_root: "http://172.16.135.2/ztd/os10_scripts"
       os10_versions:
        - dell_os10_10.5.1.0
        - dell_os10_10.5.2.0

@@ -7,7 +7,6 @@
   vars:
       netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
       netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
-      ztd_script_root: "http://scriptrepo.yourorg.com/tftp/ztd"
       www_root: /var/www
       ztd_dir: ztd
       ztd_scripts_dir: os10_scripts
