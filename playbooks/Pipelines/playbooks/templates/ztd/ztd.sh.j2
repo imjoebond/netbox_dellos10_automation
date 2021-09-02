@@ -2,7 +2,7 @@
 
 ZTD_SERVER_IP="{{ztd_server_ip}}"
 CGI_HOSTNAME_SCRIPT=/cgi-bin/catch_hostnames.sh
-HOSTNAMES=hostnames.dyn
+HOSTNAMES={{hostmap_file}}
 
 TMP=/tmp/
 HOME=/home
@@ -15,15 +15,10 @@ CLI_CONFIG_FILE="http://$ZTD_SERVER_IP/{{ztd_dir}}/{{cli_conf_path}}/cli_config"
 
 POST_SCRIPT_FILE="http://$ZTD_SERVER_IP/{{ztd_dir}}/{{post_install_scripts_dir}}/post_install.sh"
 
-## Execute server side script that will fetch hostnames and mac mapping
-$CURL http://$ZTD_SERVER_IP/{{ztd_dir}}/$CGI_HOSTNAME_SCRIPT
-
-echo "Request server side hostname mapping preperation :  http://$ZTD_SERVER_IP/{{ztd_dir}}/$CGI_HOSTNAME_SCRIPT" >> $LOG
-
 ## Download the file with hostname to ip mapping
-$CURL -o $HOME/$HOSTNAMES http://$ZTD_SERVER_IP/{{ztd_dir}}/hostmap.txt
+$CURL -o $HOME/$HOSTNAMES http://$ZTD_SERVER_IP/{{ztd_dir}}/$HOSTNAMES
 
-echo "Retreived $HOSTNAMES from server and saved to $HOME/hostmap.txt" >> $LOG
+echo "Retreived $HOSTNAMES from server and saved to $HOME/$HOSTNAMES" >> $LOG
 
 ################### DO NOT MODIFY THE LINES BELOW ##################
 sudo os10_ztd_start.sh "$IMG_FILE" "$CLI_CONFIG_FILE" "$POST_SCRIPT_FILE"

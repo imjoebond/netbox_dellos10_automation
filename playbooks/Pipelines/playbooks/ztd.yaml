@@ -9,6 +9,7 @@
       netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
       ztd_server_ip: 172.16.135.2
       www_root: /var/www
+      hostmap_file: hostmap.txt
       ztd_dir: ztd
       ztd_scripts_dir: os10_scripts
       os10_images_dir: images
@@ -68,7 +69,7 @@
     - name: config | Configuring Hostmap file
       template:
         src: templates/ztd/hostmap.txt.j2
-        dest: "/var/www/ztd/hostmap.txt"
+        dest: "/var/www/ztd/{{hostmap_file}}"
         mode: '0755'
   roles:
     - role: nginx
