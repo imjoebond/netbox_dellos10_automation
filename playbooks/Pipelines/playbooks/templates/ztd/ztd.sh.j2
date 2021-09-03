@@ -1,24 +1,20 @@
 #!/bin/bash
 
-ZTD_SERVER_IP="{{ztd_server_ip}}"
-CGI_HOSTNAME_SCRIPT=/cgi-bin/catch_hostnames.sh
-HOSTNAMES={{hostmap_file}}
-
 TMP=/tmp/
 HOME=/home
 ZTD_LOGFILE=ztd.log
 LOG=$TMP$ZTD_LOGFILE
 CURL=`type -tP curl`
 
-IMG_FILE="http://$ZTD_SERVER_IP/{{ztd_dir}}/{{os10_images_dir}}/{{item.binary}}"
-CLI_CONFIG_FILE="http://$ZTD_SERVER_IP/{{ztd_dir}}/{{cli_conf_path}}/cli_config"
+IMG_FILE="http://{{ztd_server_ip}}/{{ztd_dir}}/{{os10_images_dir}}/{{item.binary}}"
+CLI_CONFIG_FILE="http://{{ztd_server_ip}}/{{ztd_dir}}/{{cli_conf_path}}/cli_config"
 
-POST_SCRIPT_FILE="http://$ZTD_SERVER_IP/{{ztd_dir}}/{{post_install_scripts_dir}}/post_install.sh"
+POST_SCRIPT_FILE="http://{{ztd_server_ip}}/{{ztd_dir}}/{{post_install_scripts_dir}}/post_install.sh"
 
 ## Download the file with hostname to ip mapping
-$CURL -o $HOME/$HOSTNAMES http://$ZTD_SERVER_IP/{{ztd_dir}}/$HOSTNAMES
+$CURL -o $HOME/{{hostmap_file}} http://{{ztd_server_ip}}/{{ztd_dir}}/{{hostmap_file}}
 
-echo "Retreived $HOSTNAMES from server and saved to $HOME/$HOSTNAMES" >> $LOG
+echo "Retreived {{hostmap_file}} from server and saved to $HOME/{{hostmap_file}}" >> $LOG
 
 ################### DO NOT MODIFY THE LINES BELOW ##################
 sudo os10_ztd_start.sh "$IMG_FILE" "$CLI_CONFIG_FILE" "$POST_SCRIPT_FILE"
