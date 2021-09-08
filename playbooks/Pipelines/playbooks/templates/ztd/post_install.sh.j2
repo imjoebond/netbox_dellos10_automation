@@ -21,7 +21,7 @@ GW=`curl -k -H "Accept: application/json" -u $USER_NAME:$PASSWORD -X GET https:/
 echo "DHCP IP Address received : $DHCP_IP" >> $LOG
 
 DHCP_IP=$(echo $DHCP_IP | sed -e "s/\/24//g" | sed -e "s/\"//g")
-echo "DHCP IP Address received : $DHCP_IP" >> $LOG
+echo "DHCP IP Address without subnet : $DHCP_IP" >> $LOG
 echo "gateway received : $GW" >> $LOG
 
 ## Extract the mac address of the switch
@@ -33,25 +33,29 @@ MAC=${STRING%%\"*}
 echo "MAC address switch mgt interface : $MAC" >> $LOG
 
 ## This is the hostname that needs to be set via a restcall
-## 1. remove everything after space
-SWITCHNAME=$($GREP $DHCP_IP $HOME/{{hostmap_file}} | sed 's/\s.*$//')
-## 2. remove all spaces
-SWITCHNAME=`echo -e $SWITCHNAME | tr -d '[:space:]'`
-
+SWITCHNAME=$($GREP $DHCP_IP $HOME/hostmap.txt | sed 's/\s.*$//')
 echo "Found switch hostname to use : $SWITCHNAME" >> $LOG
 
 ## Set hostname
+echo "setting hostname" >> $LOG
 curl -i -k -H "Accept: application/json" -H "Content-Type: application/json" -u $USER_NAME:$PASSWORD -d'{"dell-system:system":{"hostname": "'"$SWITCHNAME"'" }}' -X PATCH https://$MGMT_IP/restconf/data/dell-system:system
 
+echo "set hostname return code: $?" >> $LOG
+
 ## Delete dhcp setting from config
+echo "delete dhcp setting from config" >> $LOG
 curl -i -k -H "Accept: application/json" -H "Content-Type: application/json" -u $USER_NAME:$PASSWORD -X DELETE https://$MGMT_IP/restconf/data/ietf-interfaces:interfaces/interface=mgmt1%2F1%2F1/dell-ip:ipv4/dell-ip:dhcp-config
+echo "delete dhcp setting from config return code: $?" >> $LOG
 
 ## Set mgmt address fixed in config
+echo "set mgmt address in config" >> $LOG
 curl -i -k -H "Accept: application/json" -H "Content-Type: application/json" -u $USER_NAME:$PASSWORD -d'{"ietf-interfaces:interfaces":{"interface":[{"name":"mgmt1/1/1","dell-ip:ipv4":{"address":{"primary-addr": '$DHCP_IP' }}}]}}' -X PATCH https://$MGMT_IP/restconf/data/ietf-interfaces:interfaces
+echo "set mgmt address in config: $?" >> $LOG
 
 ## Set static default route
+echo "set static default route" >> $LOG
 curl -i -k -H "Accept: application/json" -H "Content-Type: application/json" -u $USER_NAME:$PASSWORD -d '{"dell-management-routing:ipv4-mgmt-routes":{"route":[{"destination-prefix":"0.0.0.0/0","forwarding-router-address":'$GW'}]}}' -X PATCH https://$MGMT_IP/restconf/data/dell-management-routing:ipv4-mgmt-routes
-
+echo "set static default route return code: $?" >> $LOG
 ## Here you can set specific settings matched on the mac-address
 ## ============= START specific settings =========================
 

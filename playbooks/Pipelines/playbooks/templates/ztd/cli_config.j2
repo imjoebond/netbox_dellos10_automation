@@ -1,17 +1,16 @@
 # PRE-CONFIG
-
+hostname ZTP-STAGING
 # POST-CONFIG
 do crypto cert generate self-signed cert-file home://gnmi-os10-0.crt key-file home://gnmi-os10-0.key cname os10
 do crypto cert install cert-file home://gnmi-os10-0.crt key-file home://gnmi-os10-0.key
-
-hostname ZTP-STAGING
+hostname ZTP-STAGING-post
 rest api restconf
 ip name-server {{ isc_dhcp_name_servers|join (' ') }}
 ntp server {{ntp_server}}
 snmp-server contact "Dell Technologies GCN"
 
 crypto security-profile gnmi-os10-0
- certificate gnmi-os10-0
+certificate gnmi-os10-0
 
 gnmi-security-profile gnmi-os10-0
 
