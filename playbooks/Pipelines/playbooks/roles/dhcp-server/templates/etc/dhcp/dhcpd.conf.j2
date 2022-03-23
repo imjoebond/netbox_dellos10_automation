@@ -114,6 +114,8 @@ group {
 }
 {%endfor%}
 
+{% for sonic_version in sonic_versions %}
+#config for {{ sonic_version }}
 {% for mgmt_interface in mgmt_interfaces %}
 {% for tag in mgmt_interface.value.tags %}
 {%if sonic_version in tag.display %}
@@ -123,7 +125,7 @@ group {
     option bootfile-name "http://172.16.135.2/ztd/sonic/ztp.json"
   }
 {%endif%}{%endfor%}{%endfor%}
-
+{%endfor%}
 {%endif%}
 
 
