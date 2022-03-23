@@ -9,6 +9,8 @@
        - dell_os10_10.5.1.0
        - dell_os10_10.5.2.0
        - dell_os10_10.5.2.2
+      sonic_versions:
+        - sonic
       os10_ztd_enabled: true
       isc_dhcp_config_dhcp: true
       isc_dhcp_scopes:
