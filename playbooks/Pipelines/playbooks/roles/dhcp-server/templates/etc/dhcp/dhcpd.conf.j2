@@ -113,6 +113,17 @@ group {
 {%endif%}{%endfor%}{%endfor%}
 }
 {%endfor%}
+
+{% for mgmt_interface in mgmt_interfaces %}
+{% for tag in mgmt_interface.value.tags %}
+{%if sonic_version in tag.display %}
+  host {{mgmt_interface.value.device.display }} {
+    hardware ethernet {{ mgmt_interface.value.mac_address }};
+    fixed-address {{ hostvars[mgmt_interface.value.device.display]['primary_ip4'] }};
+    option bootfile-name "http://172.16.135.2/ztd/sonic/ztp.json"
+  }
+{%endif%}{%endfor%}{%endfor%}
+
 {%endif%}
 
 
