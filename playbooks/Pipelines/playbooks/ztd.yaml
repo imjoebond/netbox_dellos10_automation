@@ -5,42 +5,42 @@
     - nginxinc.nginx_core
   gather_facts: true
   vars:
-      netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
-      netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
-      ztd_server_ip: 172.16.135.2
-      www_root: /var/www
-      hostmap_file: hostmap.txt
-      ztd_dir: ztd
-      ztd_scripts_dir: os10_scripts
-      os10_images_dir: images
-      cli_conf_path: cli_config
-      post_install_scripts_dir: post_install_scripts
-      sonic_versions:
-        - version: sonic
-      os10_versions:
-        - version: dell_os10_10.5.1.0
-          binary: PKGS_OS10-Enterprise-10.5.1.0.124stretch-installer-x86_64.bin
-        - version: dell_os10_10.5.2.0 
-          binary: PKGS_OS10-Enterprise-10.5.2.0.232stretch-installer-x86_64.bin
-        - version: dell_os10_10.5.2.2
-          binary: PKGS_OS10-Enterprise-10.5.2.2.258stretch-installer-x86_64.bin
-      isc_dhcp_name_servers:
-        - 8.8.8.8
-        - 8.8.4.4
-      ntp_server: time.nist.gov
+    netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
+    netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
+    ztd_server_ip: 172.16.135.2
+    www_root: /var/www
+    hostmap_file: hostmap.txt
+    ztd_dir: ztd
+    ztd_scripts_dir: os10_scripts
+    os10_images_dir: images
+    cli_conf_path: cli_config
+    post_install_scripts_dir: post_install_scripts
+    sonic_versions:
+      - version: sonic
+    os10_versions:
+      - version: dell_os10_10.5.1.0
+        binary: PKGS_OS10-Enterprise-10.5.1.0.124stretch-installer-x86_64.bin
+      - version: dell_os10_10.5.2.0
+        binary: PKGS_OS10-Enterprise-10.5.2.0.232stretch-installer-x86_64.bin
+      - version: dell_os10_10.5.2.2
+        binary: PKGS_OS10-Enterprise-10.5.2.2.258stretch-installer-x86_64.bin
+    isc_dhcp_name_servers:
+      - 8.8.8.8
+      - 8.8.4.4
+    ntp_server: time.nist.gov
   pre_tasks:
     - name: "get management interfaces from netbox"
       delegate_to: localhost
       set_fact:
-        mgmt_interfaces: "{{ query('netbox.netbox.nb_lookup', 'interfaces', 
-                api_filter='tag=ztd',
-                api_endpoint=netbox_url, token=netbox_token) }}"
+        mgmt_interfaces: "{{ query('netbox.netbox.nb_lookup', 'interfaces',
+          api_filter='tag=ztd',
+          api_endpoint=netbox_url, token=netbox_token) }}"
   tasks:
     - name: "Create File Structure"
       file:
         path: "{{item}}"
         state: directory
-        mode: '0755'
+        mode: "0755"
       loop:
         - "{{www_root}}"
         - "{{www_root}}/{{ztd_dir}}"
@@ -48,31 +48,31 @@
         - "{{www_root}}/{{ztd_dir}}/{{ztd_scripts_dir}}"
         - "{{www_root}}/{{ztd_dir}}/{{post_install_scripts_dir}}"
         - "{{www_root}}/{{ztd_dir}}/{{cli_conf_path}}"
-    
+
     - name: config | Configuring ZTD Scripts
       template:
         src: templates/ztd/ztd.sh.j2
         dest: "/var/www/ztd/os10_scripts/{{item.version}}.sh"
-        mode: '0755'
+        mode: "0755"
       with_items: "{{os10_versions}}"
-    
+
     - name: config | Configuring CLI Config file
       template:
         src: templates/ztd/post_install.sh.j2
         dest: "/var/www/ztd/{{post_install_scripts_dir}}/post_install.sh"
-        mode: '0755'
+        mode: "0755"
 
     - name: config | Configuring CLI Config file
       template:
         src: templates/ztd/cli_config.j2
         dest: "/var/www/ztd/{{cli_conf_path}}/cli_config"
-        mode: '0755'
-    
+        mode: "0755"
+
     - name: config | Configuring Hostmap file
       template:
         src: templates/ztd/hostmap.txt.j2
         dest: "/var/www/ztd/{{hostmap_file}}"
-        mode: '0755'
+        mode: "0755"
   roles:
     - role: nginx
   post_tasks:
