@@ -17,7 +17,7 @@
             "hostname": "{{ mgmt_interface.value.device.display }}", 
             "platform": "x86_64-kvm_x86_64-r0", 
             "mac": "{{ mgmt_interface.value.mac_address }}", 
-            "type": "LeafRouter"
+            "type": "{{ mgmt_interface.value.device.display }}-Router"
         }
     }, 
     "COREDUMP": {

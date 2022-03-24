@@ -2,7 +2,7 @@
   "ztp": {
     "02-configdb-json": {
       "url": {
-        "source" : "http://172.16.135.2/ztd/config/config_db.json",
+        "source" : "http://172.16.135.2/sonic/config/{{ mgmt_interface.value.device.display }}_config_db.json",
         "destination": "/etc/sonic/config_db.json",
         "secure": false
         }
