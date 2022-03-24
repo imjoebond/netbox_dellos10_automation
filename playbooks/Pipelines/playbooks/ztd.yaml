@@ -79,17 +79,17 @@
         mode: "0755"
     - name: write ztp files for sonic
       template:
-      src: templates/sonic/ztp.json.j2
-      dest: "/var/www/{{sonic_dir}}/ztp/{{ mgmt_interface.value.device.display }}_ztp.json"
-      mode: "0755"
+        src: templates/sonic/ztp.json.j2
+        dest: "/var/www/{{sonic_dir}}/ztp/{{ mgmt_interface.value.device.display }}_ztp.json"
+        mode: "0755"
       with_items: "{{ mgmt_interfaces }}"
       loop_control:
         loop_var: mgmt_interface
     - name: write ztp configs for sonic
       template:
-      src: templates/sonic/config/config_db.json.j2
-      dest: "/var/www/{{sonic_dir}}/config/{{ mgmt_interface.value.device.display }}_config_db.json"
-      mode: "0755"
+        src: templates/sonic/config/config_db.json.j2
+        dest: "/var/www/{{sonic_dir}}/config/{{ mgmt_interface.value.device.display }}_config_db.json"
+        mode: "0755"
       with_items: "{{ mgmt_interfaces }}"
       loop_control:
         loop_var: mgmt_interface
