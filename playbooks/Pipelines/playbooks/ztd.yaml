@@ -11,6 +11,7 @@
     www_root: /var/www
     hostmap_file: hostmap.txt
     ztd_dir: ztd
+    sonic_dir: sonic
     ztd_scripts_dir: os10_scripts
     os10_images_dir: images
     cli_conf_path: cli_config
@@ -48,6 +49,9 @@
         - "{{www_root}}/{{ztd_dir}}/{{ztd_scripts_dir}}"
         - "{{www_root}}/{{ztd_dir}}/{{post_install_scripts_dir}}"
         - "{{www_root}}/{{ztd_dir}}/{{cli_conf_path}}"
+        - "{{www_root}}/{{sonic_dir}}"
+        - "{{www_root}}/{{sonic_dir}}/ztp"
+        - "{{www_root}}/{{sonic_dir}}/config"
 
     - name: config | Configuring ZTD Scripts
       template:
@@ -73,11 +77,26 @@
         src: templates/ztd/hostmap.txt.j2
         dest: "/var/www/ztd/{{hostmap_file}}"
         mode: "0755"
+    - name: "get management interfaces from netbox"
+      delegate_to: localhost
+      set_fact:
+        mgmt_interfaces: "{{ query('netbox.netbox.nb_lookup', 'interfaces',
+          api_filter='tag=ztd',
+          api_endpoint=netbox_url, token=netbox_token) }}"
+    - name: echo stuff
+      debug:
+        msg: "interface item is {{ item }}"
+      with_items: mgmt_interfaces
   roles:
     - role: nginx
   post_tasks:
-    - name: "Link www to nginx root"
+    - name: "Link ztd to nginx root"
       file:
         src: "{{www_root}}/ztd"
         dest: /usr/share/nginx/html/ztd
+        state: link
+    - name: "Link sonic to nginx root"
+      file:
+        src: "{{www_root}}/sonic"
+        dest: /usr/share/nginx/html/sonic
         state: link
