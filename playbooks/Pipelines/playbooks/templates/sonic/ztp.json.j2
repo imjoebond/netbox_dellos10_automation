@@ -1,0 +1,20 @@
+{
+  "ztp": {
+    "02-configdb-json": {
+      "url": {
+        "source" : "http://172.16.135.2/ztd/config/config_db.json",
+        "destination": "/etc/sonic/config_db.json",
+        "secure": false
+        }
+    },
+    "03-provisioning-script": {
+      "plugin": {
+        "url":"http://172.16.135.2/ztd/sonic_scripts/post_install.sh"
+      },
+      "reboot-on-success": true
+    },
+    "04-connectivity-check": {
+      "ping-hosts": [ "172.16.135.2" ]
+    }
+  }
+}
