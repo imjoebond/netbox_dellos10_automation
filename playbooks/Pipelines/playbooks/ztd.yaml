@@ -52,6 +52,7 @@
         - "{{www_root}}/{{sonic_dir}}"
         - "{{www_root}}/{{sonic_dir}}/ztp"
         - "{{www_root}}/{{sonic_dir}}/config"
+        - "{{www_root}}/{{sonic_dir}}/sonic_scripts"
 
     - name: config | Configuring ZTD Scripts
       template:
@@ -93,6 +94,11 @@
       with_items: "{{ mgmt_interfaces }}"
       loop_control:
         loop_var: mgmt_interface
+    - name: config | Configuring post install script
+      template:
+        src: templates/sonic/post_install.sh.j2
+        dest: "/var/www/{{sonic_dir}}/sonic_scripts/post_install.sh"
+        mode: "0755"
   roles:
     - role: nginx
   post_tasks:
