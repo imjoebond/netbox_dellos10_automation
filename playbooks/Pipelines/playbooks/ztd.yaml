@@ -17,7 +17,9 @@
     cli_conf_path: cli_config
     post_install_scripts_dir: post_install_scripts
     sonic_versions:
-      - version: sonic
+      sonic-3.3.0: sonic3.3-image
+      sonic-3.4.1: sonic3.4-image
+      sonic-3.5.0: sonic3.5-image
     os10_versions:
       - version: dell_os10_10.5.1.0
         binary: PKGS_OS10-Enterprise-10.5.1.0.124stretch-installer-x86_64.bin

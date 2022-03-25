@@ -1,5 +1,23 @@
+{% 
+os_image = "blueberry_pie"
+for tag in mgmt_interface.value.tags 
+  if tag.display.startswith("sonic")
+    os_image=sonic_versions[tag.display]
+  endif
+endfor
+%}
+
 {
   "ztp": {
+    "01-firmware" : {
+      "install" : {
+        "url" : {
+          "source" : "http://172.16.135.2/sonic/images/{%os_image%}",
+          "set-default" : true
+        },
+        "reboot-on-success" : true
+      }
+    },
     "02-configdb-json": {
       "url": {
         "source" : "http://172.16.135.2/sonic/config/{{ mgmt_interface.value.device.display }}_config_db.json",
