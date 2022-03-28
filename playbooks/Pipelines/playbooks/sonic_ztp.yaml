@@ -40,6 +40,9 @@
 
     - name: write ztp files for sonic
       include_tasks: tasks/config_ztp_files.yaml
+      with_items: "{{devices}}"
+      loop_control:
+        loop_var: device
   # roles:
   #   - role: nginx
   # post_tasks:
