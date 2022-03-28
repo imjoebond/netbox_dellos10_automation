@@ -1,15 +1,10 @@
-{% for tag in mgmt_interface.value.tags %}
-  {% if tag.display.startswith("sonic") %}
-    {{tag.display}} is here
-  {% endif %}
-{% endfor %}
 
 {
   "ztp": {
     "01-firmware" : {
       "install" : {
         "url" : {
-          "source" : "http://172.16.135.2/sonic/images/blah",
+          "source" : "http://172.16.135.2/sonic/images/{{ device.value.platform.name }}",
           "set-default" : true
         },
         "reboot-on-success" : true
@@ -17,7 +12,7 @@
     },
     "02-configdb-json": {
       "url": {
-        "source" : "http://172.16.135.2/sonic/config/{{ mgmt_interface.value.device.display }}_config_db.json",
+        "source" : "http://172.16.135.2/sonic/config/{{ device.value.name }}_config_db.json",
         "destination": "/etc/sonic/config_db.json",
         "secure": false
         }

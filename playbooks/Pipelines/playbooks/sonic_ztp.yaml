@@ -39,31 +39,12 @@
         - "{{www_root}}/{{sonic_dir}}/sonic_scripts"
 
     - name: write ztp files for sonic
-      template:
-        src: templates/sonic/ztp.json.j2
-        dest: "/var/www/{{sonic_dir}}/ztp/{{ device.value.display }}_ztp.json"
-        mode: "0755"
-      with_items: "{{ devices }}"
-      loop_control:
-        loop_var: device
-    - name: write ztp configs for sonic
-      template:
-        src: templates/sonic/config/config_db.json.j2
-        dest: "/var/www/{{sonic_dir}}/config/{{ device.value.display }}_config_db.json"
-        mode: "0755"
-      with_items: "{{ devices }}"
-      loop_control:
-        loop_var: device
-    - name: config | Configuring post install script
-      template:
-        src: templates/sonic/post_install.sh.j2
-        dest: "/var/www/{{sonic_dir}}/sonic_scripts/post_install.sh"
-        mode: "0755"
-  roles:
-    - role: nginx
-  post_tasks:
-    - name: "Link sonic to nginx root"
-      file:
-        src: "{{www_root}}/sonic"
-        dest: /usr/share/nginx/html/sonic
-        state: link
+      include_tasks: tasks/config_ztp_files.yaml
+  # roles:
+  #   - role: nginx
+  # post_tasks:
+  #   - name: "Link sonic to nginx root"
+  #     file:
+  #       src: "{{www_root}}/sonic"
+  #       dest: /usr/share/nginx/html/sonic
+  #       state: link

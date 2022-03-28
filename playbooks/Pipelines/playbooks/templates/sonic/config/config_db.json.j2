@@ -14,10 +14,9 @@
         "localhost": {
             "hwsku": "DellEMC-S5248f-P-25G-DPB", 
             "default_config_profile": "l3", 
-            "hostname": "{{ mgmt_interface.value.device.display }}", 
+            "hostname": "{{ device.value.name }}", 
             "platform": "x86_64-kvm_x86_64-r0", 
-            "mac": "{{ mgmt_interface.value.mac_address }}", 
-            "type": "{{ mgmt_interface.value.device.display }}-Router"
+            "type": "{{ device.device_role.name }}-Router"
         }
     }, 
     "COREDUMP": {
