@@ -4,7 +4,8 @@
   vars:
     netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
     netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
-    ztd_script_root: "http://172.16.135.2/ztd/os10_scripts"
+    ztp_server: "http://172.16.135.2"
+    ztd_script_root: "{{ ztp_server }}/ztd/os10_scripts"
     os10_versions:
       - dell_os10_10.5.1.0
       - dell_os10_10.5.2.0
@@ -35,7 +36,7 @@
       delegate_to: localhost
       set_fact:
         mgmt_interfaces: "{{ query('netbox.netbox.nb_lookup', 'interfaces',
-          api_filter='tag=ztd',
+          api_filter='tag=ztd&tag=ztp',
           api_endpoint=netbox_url, token=netbox_token) }}"
   roles:
     - role: dhcp-server
