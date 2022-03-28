@@ -36,7 +36,7 @@
       delegate_to: localhost
       set_fact:
         mgmt_interfaces: "{{ query('netbox.netbox.nb_lookup', 'interfaces',
-          api_filter='tag=ztd&tag=ztp',
+          api_filter='tag=ztp',
           api_endpoint=netbox_url, token=netbox_token) }}"
   roles:
     - role: dhcp-server
