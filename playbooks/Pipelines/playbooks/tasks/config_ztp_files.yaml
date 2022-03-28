@@ -1,4 +1,7 @@
 ---
+- name: debug device
+  debug: 
+    msg: "device {{ device }}"
 - name: write ztp files for sonic
   template:
     src: templates/sonic/ztp.json.j2
