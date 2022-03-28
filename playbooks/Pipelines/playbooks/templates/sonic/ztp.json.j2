@@ -1,9 +1,8 @@
-{%for tag in mgmt_interface.value.tags 
-  if tag.display.startswith("sonic")%}
+{% for tag in mgmt_interface.value.tags %}
+  {% if tag.display.startswith("sonic") %}
     {{tag.display}} is here
-  {%endif
-endfor
-%}
+  {% endif %}
+{% endfor %}
 
 {
   "ztp": {
