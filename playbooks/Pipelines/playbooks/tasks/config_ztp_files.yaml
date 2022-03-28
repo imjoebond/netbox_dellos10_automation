@@ -1,16 +1,8 @@
 ---
-- name: debug device
-  debug: 
-    msg: "device {{ device }}"
 - name: write ztp files for sonic
   template:
     src: templates/sonic/ztp.json.j2
     dest: "/var/www/{{sonic_dir}}/ztp/{{ device.value.display }}_ztp.json"
-    mode: "0755"
-- name: write ztp configs for sonic
-  template:
-    src: templates/sonic/config/config_db.json.j2
-    dest: "/var/www/{{sonic_dir}}/config/{{ device.value.display }}_config_db.json"
     mode: "0755"
 - name: Get mgmt interfaces from NetBox
   uri:
@@ -21,6 +13,8 @@
       accept: "application/json"
       Authorization: "Token {{ netbox_token }}"
   register: mgmt_interfaces
-- name: debug it
-  debug: 
-    msg: "print interface {{ mgmt_interfaces }}"
+- name: write ztp configs for sonic
+  template:
+    src: templates/sonic/config/config_db.json.j2
+    dest: "/var/www/{{sonic_dir}}/config/{{ device.value.display }}_config_db.json"
+    mode: "0755"
