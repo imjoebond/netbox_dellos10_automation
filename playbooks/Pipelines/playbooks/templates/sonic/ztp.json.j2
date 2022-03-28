@@ -1,9 +1,7 @@
-{% 
-os_image = "blueberry_pie"
-for tag in mgmt_interface.value.tags 
-  if tag.display.startswith("sonic")
-    os_image=sonic_versions[tag.display]
-  endif
+{%for tag in mgmt_interface.value.tags 
+  if tag.display.startswith("sonic")%}
+    {{tag.display}} is here
+  {%endif
 endfor
 %}
 
