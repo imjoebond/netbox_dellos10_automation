@@ -5,6 +5,7 @@
     netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
     netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
     ztp_server: "http://172.16.135.2"
+    sonic_dir: "sonic"
     ztd_script_root: "{{ ztp_server }}/ztd/os10_scripts"
     os10_versions:
       - dell_os10_10.5.1.0
