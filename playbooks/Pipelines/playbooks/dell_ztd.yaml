@@ -11,15 +11,10 @@
     www_root: /var/www
     hostmap_file: hostmap.txt
     ztd_dir: ztd
-    sonic_dir: sonic
     ztd_scripts_dir: os10_scripts
     os10_images_dir: images
     cli_conf_path: cli_config
     post_install_scripts_dir: post_install_scripts
-    sonic_versions:
-      sonic-3.3.0: sonic3.3-image
-      sonic-3.4.1: sonic3.4-image
-      sonic-3.5.0: sonic3.5-image
     os10_versions:
       - version: dell_os10_10.5.1.0
         binary: PKGS_OS10-Enterprise-10.5.1.0.124stretch-installer-x86_64.bin
@@ -51,10 +46,6 @@
         - "{{www_root}}/{{ztd_dir}}/{{ztd_scripts_dir}}"
         - "{{www_root}}/{{ztd_dir}}/{{post_install_scripts_dir}}"
         - "{{www_root}}/{{ztd_dir}}/{{cli_conf_path}}"
-        - "{{www_root}}/{{sonic_dir}}"
-        - "{{www_root}}/{{sonic_dir}}/ztp"
-        - "{{www_root}}/{{sonic_dir}}/config"
-        - "{{www_root}}/{{sonic_dir}}/sonic_scripts"
 
     - name: config | Configuring ZTD Scripts
       template:
@@ -80,27 +71,6 @@
         src: templates/ztd/hostmap.txt.j2
         dest: "/var/www/ztd/{{hostmap_file}}"
         mode: "0755"
-    - name: write ztp files for sonic
-      template:
-        src: templates/sonic/ztp.json.j2
-        dest: "/var/www/{{sonic_dir}}/ztp/{{ mgmt_interface.value.device.display }}_ztp.json"
-        mode: "0755"
-      with_items: "{{ mgmt_interfaces }}"
-      loop_control:
-        loop_var: mgmt_interface
-    - name: write ztp configs for sonic
-      template:
-        src: templates/sonic/config/config_db.json.j2
-        dest: "/var/www/{{sonic_dir}}/config/{{ mgmt_interface.value.device.display }}_config_db.json"
-        mode: "0755"
-      with_items: "{{ mgmt_interfaces }}"
-      loop_control:
-        loop_var: mgmt_interface
-    - name: config | Configuring post install script
-      template:
-        src: templates/sonic/post_install.sh.j2
-        dest: "/var/www/{{sonic_dir}}/sonic_scripts/post_install.sh"
-        mode: "0755"
   roles:
     - role: nginx
   post_tasks:
@@ -108,9 +78,4 @@
       file:
         src: "{{www_root}}/ztd"
         dest: /usr/share/nginx/html/ztd
-        state: link
-    - name: "Link sonic to nginx root"
-      file:
-        src: "{{www_root}}/sonic"
-        dest: /usr/share/nginx/html/sonic
         state: link
