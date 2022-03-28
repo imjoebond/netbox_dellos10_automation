@@ -16,7 +16,7 @@
             "default_config_profile": "l3", 
             "hostname": "{{ device.value.name }}", 
             "platform": "x86_64-kvm_x86_64-r0", 
-            "mac" : "{{ mgmt_interfaces.json.results[0].mac_address }}"
+            "mac" : "{{ mgmt_interfaces.json.results[0].mac_address }}",
             "type": "{{ device.value.device_role.name }}-Router"
         }
     }, 
