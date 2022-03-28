@@ -123,7 +123,7 @@ group {
   host {{ mgmt_interface.value.device.display }} {
     hardware ethernet {{ mgmt_interface.value.mac_address }};
     fixed-address {{ hostvars[mgmt_interface.value.device.display]['primary_ip4'] }};
-    option bootfile-name "http://172.16.135.2/sonic/ztp/{{ mgmt_interface.value.device.display }}_ztp.json";
+    option bootfile-name "{{ ztp_server }}/{{ sonic_dir }}/ztp/{{ mgmt_interface.value.device.display }}_ztp.json";
   }
 {%endif%}{%endfor%}{%endfor%}
 }
