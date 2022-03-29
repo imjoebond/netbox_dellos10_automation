@@ -8,6 +8,7 @@
     netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
     netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
     ztp_server: "http://172.16.135.2"
+    ping_check_server: 172.16.135.2
     www_root: /var/www
     hostmap_file: hostmap.txt
     ztd_dir: ztd
