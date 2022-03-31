@@ -1,4 +1,4 @@
-- name: Infrastructure Services [DHCP server]
+- name: Configure DHCP server for OS10 ZTD and Sonic ZTP
   hosts: us-east-dhcp*
   gather_facts: true
   vars:

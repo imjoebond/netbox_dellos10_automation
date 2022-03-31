@@ -1,0 +1,14 @@
+- name: Infrastructure Services [ZTD server]
+  hosts: leaf1
+  connection: httpapi
+  gather_facts: false
+  collections:
+     - dellemc.enterprise_sonic
+  tasks:
+  - name: Set Hostname
+    dellemc.enterprise_sonic.sonic_command:
+      commands: show version
+    register: version_info
+  - name: debug version
+    debug:
+      msg: "Version info {{ version_info }}"

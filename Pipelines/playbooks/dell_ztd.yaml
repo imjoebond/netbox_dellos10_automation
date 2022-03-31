@@ -1,4 +1,4 @@
-- name: Infrastructure Services [ZTD server]
+- name: Configure Dell ZTD server
   hosts: us-east-dhcp*
   become: true
   collections:

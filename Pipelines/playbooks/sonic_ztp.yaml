@@ -1,4 +1,4 @@
-- name: Infrastructure Services [ZTD server]
+- name: Configure Sonic ZTP Server 
   hosts: us-east-dhcp*
   become: true
   collections:
@@ -44,11 +44,11 @@
       with_items: "{{devices}}"
       loop_control:
         loop_var: device
-  # roles:
-  #   - role: nginx
-  # post_tasks:
-  #   - name: "Link sonic to nginx root"
-  #     file:
-  #       src: "{{www_root}}/sonic"
-  #       dest: /usr/share/nginx/html/sonic
-  #       state: link
+  roles:
+    - role: nginx
+  post_tasks:
+    - name: "Link sonic to nginx root"
+      file:
+        src: "{{www_root}}/sonic"
+        dest: /usr/share/nginx/html/sonic
+        state: link
