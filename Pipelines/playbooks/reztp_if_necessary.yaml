@@ -5,7 +5,7 @@
   collections:
      - dellemc.enterprise_sonic
   tasks:
-  - name: Set Hostname
+  - name: Show version
     dellemc.enterprise_sonic.sonic_command:
       commands: show version
     register: version_info
