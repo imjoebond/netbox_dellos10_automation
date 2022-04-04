@@ -6,5 +6,6 @@ group_by:
 query_filters:
   - role: dhcp
   - role: leaf
+  - role: spine
 device_query_filters:
   - has_primary_ip: 'true'

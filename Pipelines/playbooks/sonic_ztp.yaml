@@ -1,0 +1,54 @@
+- name: Configure Sonic ZTP Server 
+  hosts: us-east-dhcp*
+  become: true
+  collections:
+    - nginxinc.nginx_core
+  gather_facts: true
+  vars:
+    netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
+    netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
+    ztp_server: "http://172.16.135.2"
+    ping_check_server: 172.16.135.2
+    www_root: /var/www
+    hostmap_file: hostmap.txt
+    ztd_dir: ztd
+    sonic_dir: sonic
+    cli_conf_path: cli_config
+    post_install_scripts_dir: post_install_scripts
+    isc_dhcp_name_servers:
+      - 8.8.8.8
+      - 8.8.4.4
+    ntp_server: time.nist.gov
+  pre_tasks:
+    - name: "get ztp devices from netbox"
+      delegate_to: localhost
+      set_fact:
+        devices: "{{ query('netbox.netbox.nb_lookup', 'devices',
+          api_filter='tag=ztp',
+          api_endpoint=netbox_url, token=netbox_token) }}"
+  tasks:
+    - name: "Create File Structure"
+      file:
+        path: "{{item}}"
+        state: directory
+        mode: "0755"
+      loop:
+        - "{{www_root}}"
+        - "{{www_root}}/{{sonic_dir}}"
+        - "{{www_root}}/{{sonic_dir}}/ztp"
+        - "{{www_root}}/{{sonic_dir}}/config"
+        - "{{www_root}}/{{sonic_dir}}/sonic_scripts"
+
+    - name: write ztp files for sonic
+      include_tasks: tasks/config_ztp_files.yaml
+      with_items: "{{devices}}"
+      loop_control:
+        loop_var: device
+  roles:
+    - role: nginx
+  post_tasks:
+    - name: "Link sonic to nginx root"
+      file:
+        src: "{{www_root}}/sonic"
+        dest: /usr/share/nginx/html/sonic
+        state: link

@@ -2,3 +2,5 @@
 collections:
   - name: nginxinc.nginx_core
     version: 0.3.0
+  - name: dellemc.enterprise_sonic
+    version: 1.1.0

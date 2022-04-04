@@ -17,4 +17,5 @@ example
 
 ### Running 
 `ansible-playbook -i netbox_inventory.yaml playbooks/Pipelines/playbooks/dhcp.yaml`
+`ansible-playbook -i netbox_inventory.yaml playbooks/Pipelines/playbooks/sonic_ztp.yaml`
 

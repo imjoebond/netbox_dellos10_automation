@@ -113,6 +113,21 @@ group {
 {%endif%}{%endfor%}{%endfor%}
 }
 {%endfor%}
+
+
+group {
+{% for mgmt_interface in mgmt_interfaces %}
+{% for tag in mgmt_interface.value.tags %}
+{%if 'sonic' == tag.display %}
+  host {{ mgmt_interface.value.device.display }} {
+    hardware ethernet {{ mgmt_interface.value.mac_address }};
+    fixed-address {{ hostvars[mgmt_interface.value.device.display]['primary_ip4'] }};
+    option bootfile-name "{{ ztp_server }}/{{ sonic_dir }}/ztp/{{ mgmt_interface.value.device.display }}_ztp.json";
+  }
+{%endif%}
+{%endfor%}
+{%endfor%}
+}
 {%endif%}
 
 

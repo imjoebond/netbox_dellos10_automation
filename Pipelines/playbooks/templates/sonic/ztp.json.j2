@@ -1,0 +1,30 @@
+
+{
+  "ztp": {
+    "01-firmware" : {
+      "install" : {
+        "url" : {
+          "source" : "{{ ztp_server }}/{{ sonic_dir }}/images/{{ device.value.platform.name }}.bin",
+          "set-default" : true
+        },
+        "reboot-on-success" : true
+      }
+    },
+    "02-configdb-json": {
+      "url": {
+        "source" : "{{ ztp_server }}/{{ sonic_dir }}/config/{{ device.value.name }}_config_db.json",
+        "destination": "/etc/sonic/config_db.json",
+        "secure": false
+        }
+    },
+    "03-provisioning-script": {
+      "plugin": {
+        "url":"{{ ztp_server }}/{{ sonic_dir }}/sonic_scripts/post_install.sh"
+      },
+      "reboot-on-success": true
+    },
+    "04-connectivity-check": {
+      "ping-hosts": [ "{{ ping_check_server }}" ]
+    }
+  }
+}

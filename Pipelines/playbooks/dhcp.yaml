@@ -1,0 +1,43 @@
+- name: Configure DHCP server for OS10 ZTD and Sonic ZTP
+  hosts: us-east-dhcp*
+  gather_facts: true
+  vars:
+    netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
+    netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
+    ztp_server: "http://172.16.135.2"
+    sonic_dir: "sonic"
+    ztd_script_root: "{{ ztp_server }}/ztd/os10_scripts"
+    os10_versions:
+      - dell_os10_10.5.1.0
+      - dell_os10_10.5.2.0
+      - dell_os10_10.5.2.2
+    sonic_versions:
+      - sonic
+    os10_ztd_enabled: true
+    isc_dhcp_config_dhcp: true
+    isc_dhcp_scopes:
+      - subnet: 172.16.135.0
+        default_lease_time: "{{ isc_dhcp_default_lease_time }}"
+        max_lease_time: "{{ isc_dhcp_max_lease_time }}"
+        netmask: 255.255.255.0
+        # Define scope specific options to configure
+        options:
+          - name: routers
+            value: 192.168.250.1
+          - name: subnet-mask
+            value: 255.255.255.0
+          - name: broadcast-address
+            value: 192.168.250.255
+          - name: domain-name-servers
+            value: "{{ isc_dhcp_name_servers|join (', ') }}"
+        range_start: 172.16.135.50
+        range_end: 172.16.135.70
+  pre_tasks:
+    - name: "get management interfaces from netbox"
+      delegate_to: localhost
+      set_fact:
+        mgmt_interfaces: "{{ query('netbox.netbox.nb_lookup', 'interfaces',
+          api_filter='tag=ztp',
+          api_endpoint=netbox_url, token=netbox_token) }}"
+  roles:
+    - role: dhcp-server
