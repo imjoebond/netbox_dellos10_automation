@@ -1,6 +1,6 @@
 - name: Infrastructure Services [ZTD server]
   hosts: leaf1
-  connection: httpapi
+  connection: network_cli
   gather_facts: false
   collections:
      - dellemc.enterprise_sonic
