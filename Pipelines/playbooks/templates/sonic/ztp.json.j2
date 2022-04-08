@@ -21,7 +21,7 @@
       "plugin": {
         "url":"{{ ztp_server }}/{{ sonic_dir }}/sonic_scripts/post_install.sh"
       },
-      "reboot-on-success": true
+      "reboot-on-success": false
     },
     "04-connectivity-check": {
       "ping-hosts": [ "{{ ping_check_server }}" ]
