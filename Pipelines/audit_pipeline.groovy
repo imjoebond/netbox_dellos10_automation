@@ -3,7 +3,7 @@ pipeline {
 	environment {
   	 
    	PIPELINE_REPO = "https://github.com/imjoebond/netbox_dellos10_automation"
-   	PIPELINE_BRANCH="main"
+   	PIPELINE_BRANCH="jb_add_sonic"
    	PIPELINE_WORKSPACE="network_auto"
    	//SSH_USER=credentials('ssh_user')
    	//#SSH_PASS=credentials('ssh_pass')
