@@ -5,9 +5,8 @@ pipeline {
    	PIPELINE_REPO = "https://github.com/imjoebond/netbox_dellos10_automation"
    	PIPELINE_BRANCH="jb_add_sonic"
    	PIPELINE_WORKSPACE="network_auto"
-   	NETBOX_TOKEN=credentials('netbox_token')
-    NETBOX_API="http://192.168.244.242:8000/"
-   	
+   	//SSH_USER=credentials('ssh_user')
+   	//#SSH_PASS=credentials('ssh_pass')
   	 
    }
 	stages {
@@ -30,17 +29,16 @@ pipeline {
         	steps {
             	dir ('network_auto') {
                 	sh('pip3 install -r requirements.txt --user')
-                  sh('ansible-galaxy install -r requirements.yml')
             	}
         	}
     	}
-      stage('audit switches with ansible') {
+      stage('install dependencies') {
         	steps {
             	dir ('network_auto') {
-                	sh('ansible-playbook -i netbox_inventory -l leaf3 Pipelines/playbooks/check_switch_version.yaml -vvv')
+                	sh('pip3 install -r requirements.txt --user')
             	}
         	}
     	}
-	}
+	
 	}
 }
