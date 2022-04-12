@@ -32,10 +32,10 @@ pipeline {
             	}
         	}
     	}
-      stage('install dependencies') {
+      stage('install galaxy dependencies') {
         	steps {
             	dir ('network_auto') {
-                	sh('pip3 install -r requirements.txt --user')
+                	sh('ansible-galaxy install -r requirements.yml')
             	}
         	}
     	}
