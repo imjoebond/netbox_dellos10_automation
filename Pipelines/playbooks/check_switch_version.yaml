@@ -2,6 +2,9 @@
   hosts: all
   gather_facts: false
 
+  vars:
+    netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
+    netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
   tasks:
   - name: Show version
     shell:
