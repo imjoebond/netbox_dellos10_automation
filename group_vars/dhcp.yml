@@ -1,3 +1,0 @@
-ansible_user: gns3
-ansible_pass: gns3
-ansible_become_password: gns3
