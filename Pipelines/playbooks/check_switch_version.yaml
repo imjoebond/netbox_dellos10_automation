@@ -25,11 +25,10 @@
     delegate_to: localhost
     shell:
       cmd:
-        - "mkdir temp" 
-        - "echo 'hostname,running_version,netbox_version' > temp/switch_audit.csv"
+        - "echo 'hostname,running_version,netbox_version' > /tmp/switch_audit.csv"
     when: audit_file.stat.exists
 
   - name: write switch data to audit file
     delegate_to: localhost
     shell:
-      cmd: "echo '{{ inventory_hostname }},{{ fmt_version_info }}, {{ platform }}' >> temp/switch_audit.csv"
+      cmd: "echo '{{ inventory_hostname }},{{ fmt_version_info }}, {{ platform }}' >> /tmp/switch_audit.csv"
