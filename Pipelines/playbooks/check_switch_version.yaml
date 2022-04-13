@@ -16,7 +16,7 @@
       platform: "{{ hostvars[inventory_hostname]['platforms'][0] }}"
 
   - name: define file
-    delegate_to: local
+    delegate_to: localhost
     stat:
       path: /tmp/switch_audit.csv
     register: audit_file
