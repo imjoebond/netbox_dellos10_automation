@@ -1,6 +1,5 @@
 - name: Infrastructure Services [ZTD server]
   hosts: all
-  connection: network_cli
   gather_facts: false
 
   tasks:
