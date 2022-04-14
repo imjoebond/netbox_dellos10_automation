@@ -15,19 +15,6 @@
       fmt_version_info: "{{ ((version_info.stdout | lower) | replace('.','-')) }}" #netbox is converting periods to dashes so I need to convert version info into the same format.
       platform: "{{ hostvars[inventory_hostname]['platforms'][0] }}"
 
-  - name: define file
-    delegate_to: localhost
-    stat:
-      path: /tmp/switch_audit.csv
-    register: audit_file
-
-  - name: create local file if it doesn't exist
-    delegate_to: localhost
-    shell:
-      cmd:
-        - "echo 'hostname,running_version,netbox_version' > /tmp/switch_audit.csv"
-    when: audit_file.stat.exists == False
-
   - name: write switch data to audit file
     delegate_to: localhost
     shell:
