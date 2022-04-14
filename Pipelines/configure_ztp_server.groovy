@@ -34,12 +34,10 @@ pipeline {
             	}
         	}
     	}
-      stage('audit pipelines') {
+      stage('reztp switch') {
         	steps {
             	dir ('network_auto') {
-                  sh("echo 'hostname,running_version,netbox_version' > switch_audit.csv")
-                	sh('ansible-playbook -i netbox_inventory.yaml Pipelines/playbooks/check_switch_version.yaml')
-                  archiveArtifacts artifacts: 'Pipeline/playbooks/switch_audit.csv', followSymlinks: false
+                  sh('ansible-playbook -i netbox_inventory.yaml -l $SWITCH_NAME Pipelines/playbooks/reztp_if_necessary.yaml')
             	}
         	}
     	}
