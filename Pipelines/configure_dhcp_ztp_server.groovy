@@ -37,7 +37,8 @@ pipeline {
       stage('reztp switch') {
         	steps {
             	dir ('network_auto') {
-                  sh('ansible-playbook -i netbox_inventory.yaml -l $SWITCH_NAME Pipelines/playbooks/reztp_if_necessary.yaml')
+                  sh('ansible-playbook -i netbox_inventory.yaml Pipelines/playbooks/dhcp.yaml')
+									sh('ansible-playbook -i netbox_inventory.yaml Pipelines/playbooks/sonic_ztp.yaml')
             	}
         	}
     	}

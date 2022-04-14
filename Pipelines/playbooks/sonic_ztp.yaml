@@ -1,5 +1,5 @@
 - name: Configure Sonic ZTP Server 
-  hosts: us-east-dhcp*
+  hosts: device_roles_dhcp #poc use the same server
   become: true
   collections:
     - nginxinc.nginx_core
