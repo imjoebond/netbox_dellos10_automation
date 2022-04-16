@@ -1,7 +1,10 @@
 - name: Infrastructure Services [ZTD server]
-  hosts: all
+  hosts: device_roles_leaf
   gather_facts: false
 
+  vars:
+    netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
+    netbox_token: "{{ lookup('env', 'NETBOX_TOKEN') }}"
   tasks:
   - name: Show version
     shell:
@@ -11,12 +14,8 @@
     set_fact:
       fmt_version_info: "{{ ((version_info.stdout | lower) | replace('.','-')) }}" #netbox is converting periods to dashes so I need to convert version info into the same format.
       platform: "{{ hostvars[inventory_hostname]['platforms'][0] }}"
-  - name: run ztp when platform mismatch
-    become: true
+
+  - name: write switch data to audit file
+    delegate_to: localhost
     shell:
-      cmd: "ztp run -y"
-    register: ztpstatus
-    when: fmt_version_info != platform
-  - name: debug ztp status
-    debug:
-      msg: "ztp status {{ ztpstatus }}"
+      cmd: "echo '{{ inventory_hostname }},{{ fmt_version_info }},{{ platform }}' >> switch_audit.csv"

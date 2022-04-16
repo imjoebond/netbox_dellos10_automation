@@ -1,5 +1,5 @@
 - name: Configure DHCP server for OS10 ZTD and Sonic ZTP
-  hosts: us-east-dhcp*
+  hosts: device_roles_dhcp
   gather_facts: true
   vars:
     netbox_url: "{{ lookup('env', 'NETBOX_API') }}"
