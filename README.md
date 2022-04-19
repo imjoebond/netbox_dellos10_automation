@@ -12,7 +12,7 @@ Ansible Repo for Configuring DHCP and ZTD for Dell Switches with Netbox inventor
 Environment variables required for NETBOX_API and NETBOX_TOKEN  
 
 ### GNS3 Setup
-![ GNS3 Setup](GNS3_visual.PNG "how to setup gns3 environment")
+![ GNS3 Setup](docs/GNS3_visual.PNG "how to setup gns3 environment")
 
 example
 `export NETBOX_API=https://netboxurl.yourorg.com:8000`  
