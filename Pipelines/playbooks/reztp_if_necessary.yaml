@@ -1,5 +1,5 @@
 - name: Infrastructure Services [ZTD server]
-  hosts: all
+  hosts: device-role-leaf
   gather_facts: false
 
   tasks:
