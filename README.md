@@ -22,3 +22,13 @@ example
 `ansible-playbook -i netbox_inventory.yaml playbooks/Pipelines/playbooks/dhcp.yaml`
 `ansible-playbook -i netbox_inventory.yaml playbooks/Pipelines/playbooks/sonic_ztp.yaml`
 
+
+#### Cloning Netbox
+clone netbox-docker and use docker-compose to bring up an instance.
+cp netbox.sql /var/lib/docker/volumes/netboxdocker_netbox-postgres-data/_data/
+psql -U netbox -d postgres
+drop database netbox with (force);
+psql -U netbox -d netbox -f netbox.sql
+
+source /opt/netbox/venv/bin/activate
+python manage.py createsuperuser
