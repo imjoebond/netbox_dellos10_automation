@@ -5,7 +5,7 @@ Ansible Repo for Configuring DHCP and ZTD for Dell Switches with Netbox inventor
 
 
 `pip3 install -r requirements.txt`  
-`ansible-galaxy install -r requirements.yml -p roles`
+`ansible-galaxy install -r requirements.yml`
 
 ### Requirements
 
@@ -19,8 +19,8 @@ example
 `export NETBOX_TOKEN=0123456789abcdef0123456789abcdef01234555`  
 
 ### Running 
-`ansible-playbook -i netbox_inventory.yaml playbooks/Pipelines/playbooks/dhcp.yaml`
-`ansible-playbook -i netbox_inventory.yaml playbooks/Pipelines/playbooks/sonic_ztp.yaml`
+`ansible-playbook -i netbox_inventory.yaml Pipelines/playbooks/dhcp.yaml`
+`ansible-playbook -i netbox_inventory.yaml Pipelines/playbooks/sonic_ztp.yaml`
 
 
 #### Cloning Netbox
