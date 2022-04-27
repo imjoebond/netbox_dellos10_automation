@@ -36,6 +36,7 @@
         - "{{www_root}}"
         - "{{www_root}}/{{sonic_dir}}"
         - "{{www_root}}/{{sonic_dir}}/ztp"
+        - "{{www_root}}/{{sonic_dir}}/images"
         - "{{www_root}}/{{sonic_dir}}/config"
         - "{{www_root}}/{{sonic_dir}}/sonic_scripts"
 
