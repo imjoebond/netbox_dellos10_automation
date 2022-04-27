@@ -9,7 +9,8 @@ Ansible Repo for Configuring DHCP and ZTD for Dell Switches with Netbox inventor
 
 ### Requirements
 
-Environment variables required for NETBOX_API and NETBOX_TOKEN  
+Environment variables required for NETBOX_API and NETBOX_TOKEN.
+Enterprise sonic images from https://www.dell.com/support/home/en-us/product-support/product/enterprise-sonic-distribution/drivers
 
 ### GNS3 Setup
 ![ GNS3 Setup](docs/GNS3_visual.PNG "how to setup gns3 environment")
