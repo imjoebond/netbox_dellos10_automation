@@ -34,7 +34,7 @@ pipeline {
       stage('audit pipelines') {
       steps {
         dir ('network_auto') {
-          sh("echo 'hostname,running_version,netbox_version' > switch_audit.csv")
+          sh("echo 'hostname,running_version,netbox_version' > Pipelines/playbooks/switch_audit.csv")
           sh('ansible-playbook -i netbox_inventory.yaml Pipelines/playbooks/check_switch_version.yaml')
           archiveArtifacts artifacts: 'Pipeline/playbooks/switch_audit.csv', followSymlinks: false
         }

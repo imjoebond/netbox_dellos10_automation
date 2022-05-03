@@ -17,15 +17,17 @@ leaf03   | 0c:20:2a:e0:00:00
 
 ## Install dependencies
 
-PIP
 `apt-get install python3-pip` 
 
-CLI of ansible runner (operator or pipeline agent)
+`apt-get install python3-pip` 
+
 `pip3 install --upgrade pip --user`
 
 Add .local/bin to $PATH or operator or pipeline agent
 
-Example export $PATH=$HOME/.local/bin:$PATH
+Example 
+
+export $PATH=$HOME/.local/bin:$PATH
 
 The groovy pipelines handle this when using jenkins
 
@@ -40,6 +42,7 @@ Enterprise sonic images from https://www.dell.com/support/home/en-us/product-sup
 
 
 example
+
 `export NETBOX_API=https://netboxurl.yourorg.com:8000`  
 `export NETBOX_TOKEN=0123456789abcdef0123456789abcdef01234555`  
 
