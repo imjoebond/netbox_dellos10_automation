@@ -6,11 +6,11 @@ Ansible Repo for Configuring DHCP and ZTD for Dell Switches with Netbox inventor
 
 Device Name | MAC
 :------ | :------
-spine01   | 0c:4a:4d:11:00:00
-spine02   | 0c:ee:a8:0b:00:00
-leaf01   | 0c:99:99:3d:00:00
-leaf02   | 0c:19:82:35:00:00
-leaf03   | 0c:20:2a:e0:00:00
+spine1   | 0c:4a:4d:11:00:00
+spine2   | 0c:ee:a8:0b:00:00
+leaf1   | 0c:99:99:3d:00:00
+leaf2   | 0c:19:82:35:00:00
+leaf3   | 0c:20:2a:e0:00:00
 
 
 
