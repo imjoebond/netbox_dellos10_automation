@@ -14,7 +14,9 @@
   - name: run ztp when platform mismatch
     become: true
     shell:
-      cmd: "ztp run -y"
+      cmd: 
+        - "ztp erase -y"
+        - "ztp run -y"
     register: ztpstatus
     when: fmt_version_info != platform
   - name: debug ztp status
