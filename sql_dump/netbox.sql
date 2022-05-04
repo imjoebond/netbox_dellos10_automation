@@ -243,7 +243,7 @@ ALTER SEQUENCE public.auth_user_user_permissions_id_seq OWNED BY public.auth_use
 --
 
 CREATE TABLE public.circuits_circuit (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -290,10 +290,10 @@ ALTER SEQUENCE public.circuits_circuit_id_seq OWNED BY public.circuits_circuit.i
 --
 
 CREATE TABLE public.circuits_circuittermination (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     id bigint NOT NULL,
-    _link_peer_id integer,
+    _link_peer_id bigint,
     mark_connected boolean NOT NULL,
     term_side character varying(1) NOT NULL,
     port_speed integer,
@@ -340,7 +340,7 @@ ALTER SEQUENCE public.circuits_circuittermination_id_seq OWNED BY public.circuit
 --
 
 CREATE TABLE public.circuits_circuittype (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -378,7 +378,7 @@ ALTER SEQUENCE public.circuits_circuittype_id_seq OWNED BY public.circuits_circu
 --
 
 CREATE TABLE public.circuits_provider (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -394,6 +394,40 @@ CREATE TABLE public.circuits_provider (
 
 
 ALTER TABLE public.circuits_provider OWNER TO netbox;
+
+--
+-- Name: circuits_provider_asns; Type: TABLE; Schema: public; Owner: netbox
+--
+
+CREATE TABLE public.circuits_provider_asns (
+    id bigint NOT NULL,
+    provider_id bigint NOT NULL,
+    asn_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.circuits_provider_asns OWNER TO netbox;
+
+--
+-- Name: circuits_provider_asns_id_seq; Type: SEQUENCE; Schema: public; Owner: netbox
+--
+
+CREATE SEQUENCE public.circuits_provider_asns_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.circuits_provider_asns_id_seq OWNER TO netbox;
+
+--
+-- Name: circuits_provider_asns_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: netbox
+--
+
+ALTER SEQUENCE public.circuits_provider_asns_id_seq OWNED BY public.circuits_provider_asns.id;
+
 
 --
 -- Name: circuits_provider_id_seq; Type: SEQUENCE; Schema: public; Owner: netbox
@@ -421,14 +455,15 @@ ALTER SEQUENCE public.circuits_provider_id_seq OWNED BY public.circuits_provider
 --
 
 CREATE TABLE public.circuits_providernetwork (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
     name character varying(100) NOT NULL,
     description character varying(200) NOT NULL,
     comments text NOT NULL,
-    provider_id bigint NOT NULL
+    provider_id bigint NOT NULL,
+    service_id character varying(100) NOT NULL
 );
 
 
@@ -460,12 +495,12 @@ ALTER SEQUENCE public.circuits_providernetwork_id_seq OWNED BY public.circuits_p
 --
 
 CREATE TABLE public.dcim_cable (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
-    termination_a_id integer NOT NULL,
-    termination_b_id integer NOT NULL,
+    termination_a_id bigint NOT NULL,
+    termination_b_id bigint NOT NULL,
     type character varying(50) NOT NULL,
     status character varying(50) NOT NULL,
     label character varying(100) NOT NULL,
@@ -512,8 +547,8 @@ ALTER SEQUENCE public.dcim_cable_id_seq OWNED BY public.dcim_cable.id;
 
 CREATE TABLE public.dcim_cablepath (
     id bigint NOT NULL,
-    origin_id integer NOT NULL,
-    destination_id integer,
+    origin_id bigint NOT NULL,
+    destination_id bigint,
     path character varying(40)[] NOT NULL,
     is_active boolean NOT NULL,
     is_split boolean NOT NULL,
@@ -552,7 +587,7 @@ ALTER SEQUENCE public.dcim_cablepath_id_seq OWNED BY public.dcim_cablepath.id;
 --
 
 CREATE TABLE public.dcim_consoleport (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -560,7 +595,7 @@ CREATE TABLE public.dcim_consoleport (
     _name character varying(100) NOT NULL,
     label character varying(64) NOT NULL,
     description character varying(200) NOT NULL,
-    _link_peer_id integer,
+    _link_peer_id bigint,
     mark_connected boolean NOT NULL,
     type character varying(50) NOT NULL,
     speed integer,
@@ -568,6 +603,7 @@ CREATE TABLE public.dcim_consoleport (
     _path_id bigint,
     cable_id bigint,
     device_id bigint NOT NULL,
+    module_id bigint,
     CONSTRAINT dcim_consoleport__link_peer_id_aa92484e_check CHECK ((_link_peer_id >= 0)),
     CONSTRAINT dcim_consoleport_speed_check CHECK ((speed >= 0))
 );
@@ -601,7 +637,7 @@ ALTER SEQUENCE public.dcim_consoleport_id_seq OWNED BY public.dcim_consoleport.i
 --
 
 CREATE TABLE public.dcim_consoleporttemplate (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     id bigint NOT NULL,
     name character varying(64) NOT NULL,
@@ -609,7 +645,8 @@ CREATE TABLE public.dcim_consoleporttemplate (
     label character varying(64) NOT NULL,
     description character varying(200) NOT NULL,
     type character varying(50) NOT NULL,
-    device_type_id bigint NOT NULL
+    device_type_id bigint,
+    module_type_id bigint
 );
 
 
@@ -641,7 +678,7 @@ ALTER SEQUENCE public.dcim_consoleporttemplate_id_seq OWNED BY public.dcim_conso
 --
 
 CREATE TABLE public.dcim_consoleserverport (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -649,7 +686,7 @@ CREATE TABLE public.dcim_consoleserverport (
     _name character varying(100) NOT NULL,
     label character varying(64) NOT NULL,
     description character varying(200) NOT NULL,
-    _link_peer_id integer,
+    _link_peer_id bigint,
     mark_connected boolean NOT NULL,
     type character varying(50) NOT NULL,
     speed integer,
@@ -657,6 +694,7 @@ CREATE TABLE public.dcim_consoleserverport (
     _path_id bigint,
     cable_id bigint,
     device_id bigint NOT NULL,
+    module_id bigint,
     CONSTRAINT dcim_consoleserverport__link_peer_id_9b7c4549_check CHECK ((_link_peer_id >= 0)),
     CONSTRAINT dcim_consoleserverport_speed_check CHECK ((speed >= 0))
 );
@@ -690,7 +728,7 @@ ALTER SEQUENCE public.dcim_consoleserverport_id_seq OWNED BY public.dcim_console
 --
 
 CREATE TABLE public.dcim_consoleserverporttemplate (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     id bigint NOT NULL,
     name character varying(64) NOT NULL,
@@ -698,7 +736,8 @@ CREATE TABLE public.dcim_consoleserverporttemplate (
     label character varying(64) NOT NULL,
     description character varying(200) NOT NULL,
     type character varying(50) NOT NULL,
-    device_type_id bigint NOT NULL
+    device_type_id bigint,
+    module_type_id bigint
 );
 
 
@@ -730,7 +769,7 @@ ALTER SEQUENCE public.dcim_consoleserverporttemplate_id_seq OWNED BY public.dcim
 --
 
 CREATE TABLE public.dcim_device (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -791,7 +830,7 @@ ALTER SEQUENCE public.dcim_device_id_seq OWNED BY public.dcim_device.id;
 --
 
 CREATE TABLE public.dcim_devicebay (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -832,7 +871,7 @@ ALTER SEQUENCE public.dcim_devicebay_id_seq OWNED BY public.dcim_devicebay.id;
 --
 
 CREATE TABLE public.dcim_devicebaytemplate (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     id bigint NOT NULL,
     name character varying(64) NOT NULL,
@@ -871,7 +910,7 @@ ALTER SEQUENCE public.dcim_devicebaytemplate_id_seq OWNED BY public.dcim_deviceb
 --
 
 CREATE TABLE public.dcim_devicerole (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -911,7 +950,7 @@ ALTER SEQUENCE public.dcim_devicerole_id_seq OWNED BY public.dcim_devicerole.id;
 --
 
 CREATE TABLE public.dcim_devicetype (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -958,7 +997,7 @@ ALTER SEQUENCE public.dcim_devicetype_id_seq OWNED BY public.dcim_devicetype.id;
 --
 
 CREATE TABLE public.dcim_frontport (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -966,7 +1005,7 @@ CREATE TABLE public.dcim_frontport (
     _name character varying(100) NOT NULL,
     label character varying(64) NOT NULL,
     description character varying(200) NOT NULL,
-    _link_peer_id integer,
+    _link_peer_id bigint,
     mark_connected boolean NOT NULL,
     type character varying(50) NOT NULL,
     rear_port_position smallint NOT NULL,
@@ -975,6 +1014,7 @@ CREATE TABLE public.dcim_frontport (
     device_id bigint NOT NULL,
     rear_port_id bigint NOT NULL,
     color character varying(6) NOT NULL,
+    module_id bigint,
     CONSTRAINT dcim_frontport__link_peer_id_318ee0d1_check CHECK ((_link_peer_id >= 0)),
     CONSTRAINT dcim_frontport_rear_port_position_check CHECK ((rear_port_position >= 0))
 );
@@ -1008,7 +1048,7 @@ ALTER SEQUENCE public.dcim_frontport_id_seq OWNED BY public.dcim_frontport.id;
 --
 
 CREATE TABLE public.dcim_frontporttemplate (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     id bigint NOT NULL,
     name character varying(64) NOT NULL,
@@ -1017,9 +1057,10 @@ CREATE TABLE public.dcim_frontporttemplate (
     description character varying(200) NOT NULL,
     type character varying(50) NOT NULL,
     rear_port_position smallint NOT NULL,
-    device_type_id bigint NOT NULL,
+    device_type_id bigint,
     rear_port_id bigint NOT NULL,
     color character varying(6) NOT NULL,
+    module_type_id bigint,
     CONSTRAINT dcim_frontporttemplate_rear_port_position_check CHECK ((rear_port_position >= 0))
 );
 
@@ -1052,14 +1093,14 @@ ALTER SEQUENCE public.dcim_frontporttemplate_id_seq OWNED BY public.dcim_frontpo
 --
 
 CREATE TABLE public.dcim_interface (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
     name character varying(64) NOT NULL,
     label character varying(64) NOT NULL,
     description character varying(200) NOT NULL,
-    _link_peer_id integer,
+    _link_peer_id bigint,
     mark_connected boolean NOT NULL,
     enabled boolean NOT NULL,
     mac_address macaddr,
@@ -1083,8 +1124,13 @@ CREATE TABLE public.dcim_interface (
     rf_channel_width numeric(7,3),
     tx_power smallint,
     wireless_link_id bigint,
+    module_id bigint,
+    vrf_id bigint,
+    duplex character varying(50),
+    speed integer,
     CONSTRAINT dcim_interface__link_peer_id_f93e17cf_check CHECK ((_link_peer_id >= 0)),
     CONSTRAINT dcim_interface_mtu_check CHECK ((mtu >= 0)),
+    CONSTRAINT dcim_interface_speed_check CHECK ((speed >= 0)),
     CONSTRAINT dcim_interface_tx_power_check CHECK ((tx_power >= 0))
 );
 
@@ -1187,7 +1233,7 @@ ALTER SEQUENCE public.dcim_interface_wireless_lans_id_seq OWNED BY public.dcim_i
 --
 
 CREATE TABLE public.dcim_interfacetemplate (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     id bigint NOT NULL,
     name character varying(64) NOT NULL,
@@ -1196,7 +1242,8 @@ CREATE TABLE public.dcim_interfacetemplate (
     _name character varying(100) NOT NULL,
     type character varying(50) NOT NULL,
     mgmt_only boolean NOT NULL,
-    device_type_id bigint NOT NULL
+    device_type_id bigint,
+    module_type_id bigint
 );
 
 
@@ -1228,7 +1275,7 @@ ALTER SEQUENCE public.dcim_interfacetemplate_id_seq OWNED BY public.dcim_interfa
 --
 
 CREATE TABLE public.dcim_inventoryitem (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -1247,6 +1294,10 @@ CREATE TABLE public.dcim_inventoryitem (
     device_id bigint NOT NULL,
     manufacturer_id bigint,
     parent_id bigint,
+    role_id bigint,
+    component_id bigint,
+    component_type_id integer,
+    CONSTRAINT dcim_inventoryitem_component_id_check CHECK ((component_id >= 0)),
     CONSTRAINT dcim_inventoryitem_level_check CHECK ((level >= 0)),
     CONSTRAINT dcim_inventoryitem_lft_check CHECK ((lft >= 0)),
     CONSTRAINT dcim_inventoryitem_rght_check CHECK ((rght >= 0)),
@@ -1278,11 +1329,104 @@ ALTER SEQUENCE public.dcim_inventoryitem_id_seq OWNED BY public.dcim_inventoryit
 
 
 --
+-- Name: dcim_inventoryitemrole; Type: TABLE; Schema: public; Owner: netbox
+--
+
+CREATE TABLE public.dcim_inventoryitemrole (
+    created timestamp with time zone,
+    last_updated timestamp with time zone,
+    custom_field_data jsonb NOT NULL,
+    id bigint NOT NULL,
+    name character varying(100) NOT NULL,
+    slug character varying(100) NOT NULL,
+    color character varying(6) NOT NULL,
+    description character varying(200) NOT NULL
+);
+
+
+ALTER TABLE public.dcim_inventoryitemrole OWNER TO netbox;
+
+--
+-- Name: dcim_inventoryitemrole_id_seq; Type: SEQUENCE; Schema: public; Owner: netbox
+--
+
+CREATE SEQUENCE public.dcim_inventoryitemrole_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.dcim_inventoryitemrole_id_seq OWNER TO netbox;
+
+--
+-- Name: dcim_inventoryitemrole_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: netbox
+--
+
+ALTER SEQUENCE public.dcim_inventoryitemrole_id_seq OWNED BY public.dcim_inventoryitemrole.id;
+
+
+--
+-- Name: dcim_inventoryitemtemplate; Type: TABLE; Schema: public; Owner: netbox
+--
+
+CREATE TABLE public.dcim_inventoryitemtemplate (
+    created timestamp with time zone,
+    last_updated timestamp with time zone,
+    id bigint NOT NULL,
+    name character varying(64) NOT NULL,
+    _name character varying(100) NOT NULL,
+    label character varying(64) NOT NULL,
+    description character varying(200) NOT NULL,
+    component_id bigint,
+    part_id character varying(50) NOT NULL,
+    lft integer NOT NULL,
+    rght integer NOT NULL,
+    tree_id integer NOT NULL,
+    level integer NOT NULL,
+    component_type_id integer,
+    device_type_id bigint NOT NULL,
+    manufacturer_id bigint,
+    parent_id bigint,
+    role_id bigint,
+    CONSTRAINT dcim_inventoryitemtemplate_component_id_check CHECK ((component_id >= 0)),
+    CONSTRAINT dcim_inventoryitemtemplate_level_check CHECK ((level >= 0)),
+    CONSTRAINT dcim_inventoryitemtemplate_lft_check CHECK ((lft >= 0)),
+    CONSTRAINT dcim_inventoryitemtemplate_rght_check CHECK ((rght >= 0)),
+    CONSTRAINT dcim_inventoryitemtemplate_tree_id_check CHECK ((tree_id >= 0))
+);
+
+
+ALTER TABLE public.dcim_inventoryitemtemplate OWNER TO netbox;
+
+--
+-- Name: dcim_inventoryitemtemplate_id_seq; Type: SEQUENCE; Schema: public; Owner: netbox
+--
+
+CREATE SEQUENCE public.dcim_inventoryitemtemplate_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.dcim_inventoryitemtemplate_id_seq OWNER TO netbox;
+
+--
+-- Name: dcim_inventoryitemtemplate_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: netbox
+--
+
+ALTER SEQUENCE public.dcim_inventoryitemtemplate_id_seq OWNED BY public.dcim_inventoryitemtemplate.id;
+
+
+--
 -- Name: dcim_location; Type: TABLE; Schema: public; Owner: netbox
 --
 
 CREATE TABLE public.dcim_location (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -1331,7 +1475,7 @@ ALTER SEQUENCE public.dcim_location_id_seq OWNED BY public.dcim_location.id;
 --
 
 CREATE TABLE public.dcim_manufacturer (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -1365,11 +1509,173 @@ ALTER SEQUENCE public.dcim_manufacturer_id_seq OWNED BY public.dcim_manufacturer
 
 
 --
+-- Name: dcim_module; Type: TABLE; Schema: public; Owner: netbox
+--
+
+CREATE TABLE public.dcim_module (
+    created timestamp with time zone,
+    last_updated timestamp with time zone,
+    custom_field_data jsonb NOT NULL,
+    id bigint NOT NULL,
+    local_context_data jsonb,
+    serial character varying(50) NOT NULL,
+    asset_tag character varying(50),
+    comments text NOT NULL,
+    device_id bigint NOT NULL,
+    module_bay_id bigint NOT NULL,
+    module_type_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.dcim_module OWNER TO netbox;
+
+--
+-- Name: dcim_module_id_seq; Type: SEQUENCE; Schema: public; Owner: netbox
+--
+
+CREATE SEQUENCE public.dcim_module_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.dcim_module_id_seq OWNER TO netbox;
+
+--
+-- Name: dcim_module_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: netbox
+--
+
+ALTER SEQUENCE public.dcim_module_id_seq OWNED BY public.dcim_module.id;
+
+
+--
+-- Name: dcim_modulebay; Type: TABLE; Schema: public; Owner: netbox
+--
+
+CREATE TABLE public.dcim_modulebay (
+    created timestamp with time zone,
+    last_updated timestamp with time zone,
+    custom_field_data jsonb NOT NULL,
+    id bigint NOT NULL,
+    name character varying(64) NOT NULL,
+    _name character varying(100) NOT NULL,
+    label character varying(64) NOT NULL,
+    "position" character varying(30) NOT NULL,
+    description character varying(200) NOT NULL,
+    device_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.dcim_modulebay OWNER TO netbox;
+
+--
+-- Name: dcim_modulebay_id_seq; Type: SEQUENCE; Schema: public; Owner: netbox
+--
+
+CREATE SEQUENCE public.dcim_modulebay_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.dcim_modulebay_id_seq OWNER TO netbox;
+
+--
+-- Name: dcim_modulebay_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: netbox
+--
+
+ALTER SEQUENCE public.dcim_modulebay_id_seq OWNED BY public.dcim_modulebay.id;
+
+
+--
+-- Name: dcim_modulebaytemplate; Type: TABLE; Schema: public; Owner: netbox
+--
+
+CREATE TABLE public.dcim_modulebaytemplate (
+    created timestamp with time zone,
+    last_updated timestamp with time zone,
+    id bigint NOT NULL,
+    name character varying(64) NOT NULL,
+    _name character varying(100) NOT NULL,
+    label character varying(64) NOT NULL,
+    "position" character varying(30) NOT NULL,
+    description character varying(200) NOT NULL,
+    device_type_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.dcim_modulebaytemplate OWNER TO netbox;
+
+--
+-- Name: dcim_modulebaytemplate_id_seq; Type: SEQUENCE; Schema: public; Owner: netbox
+--
+
+CREATE SEQUENCE public.dcim_modulebaytemplate_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.dcim_modulebaytemplate_id_seq OWNER TO netbox;
+
+--
+-- Name: dcim_modulebaytemplate_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: netbox
+--
+
+ALTER SEQUENCE public.dcim_modulebaytemplate_id_seq OWNED BY public.dcim_modulebaytemplate.id;
+
+
+--
+-- Name: dcim_moduletype; Type: TABLE; Schema: public; Owner: netbox
+--
+
+CREATE TABLE public.dcim_moduletype (
+    created timestamp with time zone,
+    last_updated timestamp with time zone,
+    custom_field_data jsonb NOT NULL,
+    id bigint NOT NULL,
+    model character varying(100) NOT NULL,
+    part_number character varying(50) NOT NULL,
+    comments text NOT NULL,
+    manufacturer_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.dcim_moduletype OWNER TO netbox;
+
+--
+-- Name: dcim_moduletype_id_seq; Type: SEQUENCE; Schema: public; Owner: netbox
+--
+
+CREATE SEQUENCE public.dcim_moduletype_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.dcim_moduletype_id_seq OWNER TO netbox;
+
+--
+-- Name: dcim_moduletype_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: netbox
+--
+
+ALTER SEQUENCE public.dcim_moduletype_id_seq OWNED BY public.dcim_moduletype.id;
+
+
+--
 -- Name: dcim_platform; Type: TABLE; Schema: public; Owner: netbox
 --
 
 CREATE TABLE public.dcim_platform (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -1410,11 +1716,11 @@ ALTER SEQUENCE public.dcim_platform_id_seq OWNED BY public.dcim_platform.id;
 --
 
 CREATE TABLE public.dcim_powerfeed (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
-    _link_peer_id integer,
+    _link_peer_id bigint,
     mark_connected boolean NOT NULL,
     name character varying(100) NOT NULL,
     status character varying(50) NOT NULL,
@@ -1466,7 +1772,7 @@ ALTER SEQUENCE public.dcim_powerfeed_id_seq OWNED BY public.dcim_powerfeed.id;
 --
 
 CREATE TABLE public.dcim_poweroutlet (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -1474,7 +1780,7 @@ CREATE TABLE public.dcim_poweroutlet (
     _name character varying(100) NOT NULL,
     label character varying(64) NOT NULL,
     description character varying(200) NOT NULL,
-    _link_peer_id integer,
+    _link_peer_id bigint,
     mark_connected boolean NOT NULL,
     type character varying(50) NOT NULL,
     feed_leg character varying(50) NOT NULL,
@@ -1483,6 +1789,7 @@ CREATE TABLE public.dcim_poweroutlet (
     cable_id bigint,
     device_id bigint NOT NULL,
     power_port_id bigint,
+    module_id bigint,
     CONSTRAINT dcim_poweroutlet__link_peer_id_8c0fea3c_check CHECK ((_link_peer_id >= 0))
 );
 
@@ -1515,7 +1822,7 @@ ALTER SEQUENCE public.dcim_poweroutlet_id_seq OWNED BY public.dcim_poweroutlet.i
 --
 
 CREATE TABLE public.dcim_poweroutlettemplate (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     id bigint NOT NULL,
     name character varying(64) NOT NULL,
@@ -1524,8 +1831,9 @@ CREATE TABLE public.dcim_poweroutlettemplate (
     description character varying(200) NOT NULL,
     type character varying(50) NOT NULL,
     feed_leg character varying(50) NOT NULL,
-    device_type_id bigint NOT NULL,
-    power_port_id bigint
+    device_type_id bigint,
+    power_port_id bigint,
+    module_type_id bigint
 );
 
 
@@ -1557,7 +1865,7 @@ ALTER SEQUENCE public.dcim_poweroutlettemplate_id_seq OWNED BY public.dcim_power
 --
 
 CREATE TABLE public.dcim_powerpanel (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -1595,7 +1903,7 @@ ALTER SEQUENCE public.dcim_powerpanel_id_seq OWNED BY public.dcim_powerpanel.id;
 --
 
 CREATE TABLE public.dcim_powerport (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -1603,7 +1911,7 @@ CREATE TABLE public.dcim_powerport (
     _name character varying(100) NOT NULL,
     label character varying(64) NOT NULL,
     description character varying(200) NOT NULL,
-    _link_peer_id integer,
+    _link_peer_id bigint,
     mark_connected boolean NOT NULL,
     type character varying(50) NOT NULL,
     maximum_draw smallint,
@@ -1612,6 +1920,7 @@ CREATE TABLE public.dcim_powerport (
     _path_id bigint,
     cable_id bigint,
     device_id bigint NOT NULL,
+    module_id bigint,
     CONSTRAINT dcim_powerport__link_peer_id_c1d5750c_check CHECK ((_link_peer_id >= 0)),
     CONSTRAINT dcim_powerport_allocated_draw_check CHECK ((allocated_draw >= 0)),
     CONSTRAINT dcim_powerport_maximum_draw_check CHECK ((maximum_draw >= 0))
@@ -1646,7 +1955,7 @@ ALTER SEQUENCE public.dcim_powerport_id_seq OWNED BY public.dcim_powerport.id;
 --
 
 CREATE TABLE public.dcim_powerporttemplate (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     id bigint NOT NULL,
     name character varying(64) NOT NULL,
@@ -1656,7 +1965,8 @@ CREATE TABLE public.dcim_powerporttemplate (
     type character varying(50) NOT NULL,
     maximum_draw smallint,
     allocated_draw smallint,
-    device_type_id bigint NOT NULL,
+    device_type_id bigint,
+    module_type_id bigint,
     CONSTRAINT dcim_powerporttemplate_allocated_draw_check CHECK ((allocated_draw >= 0)),
     CONSTRAINT dcim_powerporttemplate_maximum_draw_check CHECK ((maximum_draw >= 0))
 );
@@ -1690,7 +2000,7 @@ ALTER SEQUENCE public.dcim_powerporttemplate_id_seq OWNED BY public.dcim_powerpo
 --
 
 CREATE TABLE public.dcim_rack (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -1747,7 +2057,7 @@ ALTER SEQUENCE public.dcim_rack_id_seq OWNED BY public.dcim_rack.id;
 --
 
 CREATE TABLE public.dcim_rackreservation (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -1787,7 +2097,7 @@ ALTER SEQUENCE public.dcim_rackreservation_id_seq OWNED BY public.dcim_rackreser
 --
 
 CREATE TABLE public.dcim_rackrole (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -1826,7 +2136,7 @@ ALTER SEQUENCE public.dcim_rackrole_id_seq OWNED BY public.dcim_rackrole.id;
 --
 
 CREATE TABLE public.dcim_rearport (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -1834,7 +2144,7 @@ CREATE TABLE public.dcim_rearport (
     _name character varying(100) NOT NULL,
     label character varying(64) NOT NULL,
     description character varying(200) NOT NULL,
-    _link_peer_id integer,
+    _link_peer_id bigint,
     mark_connected boolean NOT NULL,
     type character varying(50) NOT NULL,
     positions smallint NOT NULL,
@@ -1842,6 +2152,7 @@ CREATE TABLE public.dcim_rearport (
     cable_id bigint,
     device_id bigint NOT NULL,
     color character varying(6) NOT NULL,
+    module_id bigint,
     CONSTRAINT dcim_rearport__link_peer_id_8bdc183e_check CHECK ((_link_peer_id >= 0)),
     CONSTRAINT dcim_rearport_positions_check CHECK ((positions >= 0))
 );
@@ -1875,7 +2186,7 @@ ALTER SEQUENCE public.dcim_rearport_id_seq OWNED BY public.dcim_rearport.id;
 --
 
 CREATE TABLE public.dcim_rearporttemplate (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     id bigint NOT NULL,
     name character varying(64) NOT NULL,
@@ -1884,8 +2195,9 @@ CREATE TABLE public.dcim_rearporttemplate (
     description character varying(200) NOT NULL,
     type character varying(50) NOT NULL,
     positions smallint NOT NULL,
-    device_type_id bigint NOT NULL,
+    device_type_id bigint,
     color character varying(6) NOT NULL,
+    module_type_id bigint,
     CONSTRAINT dcim_rearporttemplate_positions_check CHECK ((positions >= 0))
 );
 
@@ -1918,7 +2230,7 @@ ALTER SEQUENCE public.dcim_rearporttemplate_id_seq OWNED BY public.dcim_rearport
 --
 
 CREATE TABLE public.dcim_region (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -1965,7 +2277,7 @@ ALTER SEQUENCE public.dcim_region_id_seq OWNED BY public.dcim_region.id;
 --
 
 CREATE TABLE public.dcim_site (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -1974,16 +2286,12 @@ CREATE TABLE public.dcim_site (
     slug character varying(100) NOT NULL,
     status character varying(50) NOT NULL,
     facility character varying(50) NOT NULL,
-    asn bigint,
     time_zone character varying(63) NOT NULL,
     description character varying(200) NOT NULL,
     physical_address character varying(200) NOT NULL,
     shipping_address character varying(200) NOT NULL,
     latitude numeric(8,6),
     longitude numeric(9,6),
-    contact_name character varying(50) NOT NULL,
-    contact_phone character varying(20) NOT NULL,
-    contact_email character varying(254) NOT NULL,
     comments text NOT NULL,
     group_id bigint,
     region_id bigint,
@@ -2054,7 +2362,7 @@ ALTER SEQUENCE public.dcim_site_id_seq OWNED BY public.dcim_site.id;
 --
 
 CREATE TABLE public.dcim_sitegroup (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -2101,7 +2409,7 @@ ALTER SEQUENCE public.dcim_sitegroup_id_seq OWNED BY public.dcim_sitegroup.id;
 --
 
 CREATE TABLE public.dcim_virtualchassis (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -2264,7 +2572,7 @@ ALTER TABLE public.django_session OWNER TO netbox;
 --
 
 CREATE TABLE public.extras_configcontext (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     id bigint NOT NULL,
     name character varying(100) NOT NULL,
@@ -2311,6 +2619,40 @@ ALTER TABLE public.extras_configcontext_cluster_groups_id_seq OWNER TO netbox;
 --
 
 ALTER SEQUENCE public.extras_configcontext_cluster_groups_id_seq OWNED BY public.extras_configcontext_cluster_groups.id;
+
+
+--
+-- Name: extras_configcontext_cluster_types; Type: TABLE; Schema: public; Owner: netbox
+--
+
+CREATE TABLE public.extras_configcontext_cluster_types (
+    id bigint NOT NULL,
+    configcontext_id bigint NOT NULL,
+    clustertype_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.extras_configcontext_cluster_types OWNER TO netbox;
+
+--
+-- Name: extras_configcontext_cluster_types_id_seq; Type: SEQUENCE; Schema: public; Owner: netbox
+--
+
+CREATE SEQUENCE public.extras_configcontext_cluster_types_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.extras_configcontext_cluster_types_id_seq OWNER TO netbox;
+
+--
+-- Name: extras_configcontext_cluster_types_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: netbox
+--
+
+ALTER SEQUENCE public.extras_configcontext_cluster_types_id_seq OWNED BY public.extras_configcontext_cluster_types.id;
 
 
 --
@@ -2689,7 +3031,7 @@ ALTER SEQUENCE public.extras_configcontext_tenants_id_seq OWNED BY public.extras
 --
 
 CREATE TABLE public.extras_configrevision (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     created timestamp with time zone NOT NULL,
     comment character varying(200) NOT NULL,
     data jsonb
@@ -2703,7 +3045,6 @@ ALTER TABLE public.extras_configrevision OWNER TO netbox;
 --
 
 CREATE SEQUENCE public.extras_configrevision_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2738,8 +3079,9 @@ CREATE TABLE public.extras_customfield (
     validation_maximum integer,
     validation_regex character varying(500) NOT NULL,
     choices character varying(100)[],
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
+    object_type_id integer,
     CONSTRAINT extras_customfield_weight_check CHECK ((weight >= 0))
 );
 
@@ -2816,8 +3158,9 @@ CREATE TABLE public.extras_customlink (
     button_class character varying(30) NOT NULL,
     new_window boolean NOT NULL,
     content_type_id integer NOT NULL,
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
+    enabled boolean NOT NULL,
     CONSTRAINT extras_customlink_weight_check CHECK ((weight >= 0))
 );
 
@@ -2858,7 +3201,7 @@ CREATE TABLE public.extras_exporttemplate (
     file_extension character varying(15) NOT NULL,
     as_attachment boolean NOT NULL,
     content_type_id integer NOT NULL,
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone
 );
 
@@ -2892,12 +3235,12 @@ ALTER SEQUENCE public.extras_exporttemplate_id_seq OWNED BY public.extras_export
 
 CREATE TABLE public.extras_imageattachment (
     id bigint NOT NULL,
-    object_id integer NOT NULL,
+    object_id bigint NOT NULL,
     image character varying(100) NOT NULL,
     image_height smallint NOT NULL,
     image_width smallint NOT NULL,
     name character varying(50) NOT NULL,
-    created timestamp with time zone NOT NULL,
+    created timestamp with time zone,
     content_type_id integer NOT NULL,
     last_updated timestamp with time zone,
     CONSTRAINT extras_imageattachment_image_height_check CHECK ((image_height >= 0)),
@@ -2976,12 +3319,13 @@ ALTER SEQUENCE public.extras_jobresult_id_seq OWNED BY public.extras_jobresult.i
 CREATE TABLE public.extras_journalentry (
     last_updated timestamp with time zone,
     id bigint NOT NULL,
-    assigned_object_id integer NOT NULL,
-    created timestamp with time zone NOT NULL,
+    assigned_object_id bigint NOT NULL,
+    created timestamp with time zone,
     kind character varying(30) NOT NULL,
     comments text NOT NULL,
     assigned_object_type_id integer NOT NULL,
     created_by_id integer,
+    custom_field_data jsonb NOT NULL,
     CONSTRAINT extras_journalentry_assigned_object_id_check CHECK ((assigned_object_id >= 0))
 );
 
@@ -3019,8 +3363,8 @@ CREATE TABLE public.extras_objectchange (
     user_name character varying(150) NOT NULL,
     request_id uuid NOT NULL,
     action character varying(50) NOT NULL,
-    changed_object_id integer NOT NULL,
-    related_object_id integer,
+    changed_object_id bigint NOT NULL,
+    related_object_id bigint,
     object_repr character varying(200) NOT NULL,
     prechange_data jsonb,
     postchange_data jsonb,
@@ -3062,7 +3406,7 @@ ALTER SEQUENCE public.extras_objectchange_id_seq OWNED BY public.extras_objectch
 CREATE TABLE public.extras_tag (
     name character varying(100) NOT NULL,
     slug character varying(100) NOT NULL,
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     id bigint NOT NULL,
     color character varying(6) NOT NULL,
@@ -3147,7 +3491,7 @@ CREATE TABLE public.extras_webhook (
     secret character varying(255) NOT NULL,
     ssl_verification boolean NOT NULL,
     ca_file_path character varying(4096),
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     conditions jsonb
 );
@@ -3216,7 +3560,7 @@ ALTER SEQUENCE public.extras_webhook_id_seq OWNED BY public.extras_webhook.id;
 --
 
 CREATE TABLE public.ipam_aggregate (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -3256,7 +3600,7 @@ ALTER SEQUENCE public.ipam_aggregate_id_seq OWNED BY public.ipam_aggregate.id;
 --
 
 CREATE TABLE public.ipam_asn (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -3295,7 +3639,7 @@ ALTER SEQUENCE public.ipam_asn_id_seq OWNED BY public.ipam_asn.id;
 --
 
 CREATE TABLE public.ipam_fhrpgroup (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -3336,10 +3680,10 @@ ALTER SEQUENCE public.ipam_fhrpgroup_id_seq OWNED BY public.ipam_fhrpgroup.id;
 --
 
 CREATE TABLE public.ipam_fhrpgroupassignment (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     id bigint NOT NULL,
-    interface_id integer NOT NULL,
+    interface_id bigint NOT NULL,
     priority smallint NOT NULL,
     group_id bigint NOT NULL,
     interface_type_id integer NOT NULL,
@@ -3376,14 +3720,14 @@ ALTER SEQUENCE public.ipam_fhrpgroupassignment_id_seq OWNED BY public.ipam_fhrpg
 --
 
 CREATE TABLE public.ipam_ipaddress (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
     address inet NOT NULL,
     status character varying(50) NOT NULL,
     role character varying(50) NOT NULL,
-    assigned_object_id integer,
+    assigned_object_id bigint,
     dns_name character varying(255) NOT NULL,
     description character varying(200) NOT NULL,
     assigned_object_type_id integer,
@@ -3422,7 +3766,7 @@ ALTER SEQUENCE public.ipam_ipaddress_id_seq OWNED BY public.ipam_ipaddress.id;
 --
 
 CREATE TABLE public.ipam_iprange (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -3466,7 +3810,7 @@ ALTER SEQUENCE public.ipam_iprange_id_seq OWNED BY public.ipam_iprange.id;
 --
 
 CREATE TABLE public.ipam_prefix (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -3515,7 +3859,7 @@ ALTER SEQUENCE public.ipam_prefix_id_seq OWNED BY public.ipam_prefix.id;
 --
 
 CREATE TABLE public.ipam_rir (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -3554,7 +3898,7 @@ ALTER SEQUENCE public.ipam_rir_id_seq OWNED BY public.ipam_rir.id;
 --
 
 CREATE TABLE public.ipam_role (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -3594,7 +3938,7 @@ ALTER SEQUENCE public.ipam_role_id_seq OWNED BY public.ipam_role.id;
 --
 
 CREATE TABLE public.ipam_routetarget (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -3632,7 +3976,7 @@ ALTER SEQUENCE public.ipam_routetarget_id_seq OWNED BY public.ipam_routetarget.i
 --
 
 CREATE TABLE public.ipam_service (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -3704,11 +4048,50 @@ ALTER SEQUENCE public.ipam_service_ipaddresses_id_seq OWNED BY public.ipam_servi
 
 
 --
+-- Name: ipam_servicetemplate; Type: TABLE; Schema: public; Owner: netbox
+--
+
+CREATE TABLE public.ipam_servicetemplate (
+    created timestamp with time zone,
+    last_updated timestamp with time zone,
+    custom_field_data jsonb NOT NULL,
+    id bigint NOT NULL,
+    protocol character varying(50) NOT NULL,
+    ports integer[] NOT NULL,
+    description character varying(200) NOT NULL,
+    name character varying(100) NOT NULL
+);
+
+
+ALTER TABLE public.ipam_servicetemplate OWNER TO netbox;
+
+--
+-- Name: ipam_servicetemplate_id_seq; Type: SEQUENCE; Schema: public; Owner: netbox
+--
+
+CREATE SEQUENCE public.ipam_servicetemplate_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.ipam_servicetemplate_id_seq OWNER TO netbox;
+
+--
+-- Name: ipam_servicetemplate_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: netbox
+--
+
+ALTER SEQUENCE public.ipam_servicetemplate_id_seq OWNED BY public.ipam_servicetemplate.id;
+
+
+--
 -- Name: ipam_vlan; Type: TABLE; Schema: public; Owner: netbox
 --
 
 CREATE TABLE public.ipam_vlan (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -3752,7 +4135,7 @@ ALTER SEQUENCE public.ipam_vlan_id_seq OWNED BY public.ipam_vlan.id;
 --
 
 CREATE TABLE public.ipam_vlangroup (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -3761,6 +4144,10 @@ CREATE TABLE public.ipam_vlangroup (
     scope_id bigint,
     description character varying(200) NOT NULL,
     scope_type_id integer,
+    max_vid smallint NOT NULL,
+    min_vid smallint NOT NULL,
+    CONSTRAINT ipam_vlangroup_max_vid_check CHECK ((max_vid >= 0)),
+    CONSTRAINT ipam_vlangroup_min_vid_check CHECK ((min_vid >= 0)),
     CONSTRAINT ipam_vlangroup_scope_id_check CHECK ((scope_id >= 0))
 );
 
@@ -3793,7 +4180,7 @@ ALTER SEQUENCE public.ipam_vlangroup_id_seq OWNED BY public.ipam_vlangroup.id;
 --
 
 CREATE TABLE public.ipam_vrf (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -4164,7 +4551,7 @@ ALTER SEQUENCE public.taggit_taggeditem_id_seq OWNED BY public.taggit_taggeditem
 --
 
 CREATE TABLE public.tenancy_contact (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -4174,7 +4561,8 @@ CREATE TABLE public.tenancy_contact (
     email character varying(254) NOT NULL,
     address character varying(200) NOT NULL,
     comments text NOT NULL,
-    group_id bigint
+    group_id bigint,
+    link character varying(200) NOT NULL
 );
 
 
@@ -4206,10 +4594,10 @@ ALTER SEQUENCE public.tenancy_contact_id_seq OWNED BY public.tenancy_contact.id;
 --
 
 CREATE TABLE public.tenancy_contactassignment (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     id bigint NOT NULL,
-    object_id integer NOT NULL,
+    object_id bigint NOT NULL,
     priority character varying(50) NOT NULL,
     contact_id bigint NOT NULL,
     content_type_id integer NOT NULL,
@@ -4246,7 +4634,7 @@ ALTER SEQUENCE public.tenancy_contactassignment_id_seq OWNED BY public.tenancy_c
 --
 
 CREATE TABLE public.tenancy_contactgroup (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -4293,7 +4681,7 @@ ALTER SEQUENCE public.tenancy_contactgroup_id_seq OWNED BY public.tenancy_contac
 --
 
 CREATE TABLE public.tenancy_contactrole (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -4331,7 +4719,7 @@ ALTER SEQUENCE public.tenancy_contactrole_id_seq OWNED BY public.tenancy_contact
 --
 
 CREATE TABLE public.tenancy_tenant (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -4371,7 +4759,7 @@ ALTER SEQUENCE public.tenancy_tenant_id_seq OWNED BY public.tenancy_tenant.id;
 --
 
 CREATE TABLE public.tenancy_tenantgroup (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -4598,7 +4986,7 @@ ALTER SEQUENCE public.users_token_id_seq OWNED BY public.users_token.id;
 --
 
 CREATE TABLE public.users_userconfig (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     data jsonb NOT NULL,
     user_id integer NOT NULL
 );
@@ -4611,7 +4999,6 @@ ALTER TABLE public.users_userconfig OWNER TO netbox;
 --
 
 CREATE SEQUENCE public.users_userconfig_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -4633,7 +5020,7 @@ ALTER SEQUENCE public.users_userconfig_id_seq OWNED BY public.users_userconfig.i
 --
 
 CREATE TABLE public.virtualization_cluster (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -4674,7 +5061,7 @@ ALTER SEQUENCE public.virtualization_cluster_id_seq OWNED BY public.virtualizati
 --
 
 CREATE TABLE public.virtualization_clustergroup (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -4712,7 +5099,7 @@ ALTER SEQUENCE public.virtualization_clustergroup_id_seq OWNED BY public.virtual
 --
 
 CREATE TABLE public.virtualization_clustertype (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -4750,7 +5137,7 @@ ALTER SEQUENCE public.virtualization_clustertype_id_seq OWNED BY public.virtuali
 --
 
 CREATE TABLE public.virtualization_virtualmachine (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -4801,7 +5188,7 @@ ALTER SEQUENCE public.virtualization_virtualmachine_id_seq OWNED BY public.virtu
 --
 
 CREATE TABLE public.virtualization_vminterface (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -4816,6 +5203,7 @@ CREATE TABLE public.virtualization_vminterface (
     untagged_vlan_id bigint,
     virtual_machine_id bigint NOT NULL,
     bridge_id bigint,
+    vrf_id bigint,
     CONSTRAINT virtualization_vminterface_mtu_check CHECK ((mtu >= 0))
 );
 
@@ -4883,7 +5271,7 @@ ALTER SEQUENCE public.virtualization_vminterface_tagged_vlans_id_seq OWNED BY pu
 --
 
 CREATE TABLE public.wireless_wirelesslan (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -4925,7 +5313,7 @@ ALTER SEQUENCE public.wireless_wirelesslan_id_seq OWNED BY public.wireless_wirel
 --
 
 CREATE TABLE public.wireless_wirelesslangroup (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -4972,7 +5360,7 @@ ALTER SEQUENCE public.wireless_wirelesslangroup_id_seq OWNED BY public.wireless_
 --
 
 CREATE TABLE public.wireless_wirelesslink (
-    created date,
+    created timestamp with time zone,
     last_updated timestamp with time zone,
     custom_field_data jsonb NOT NULL,
     id bigint NOT NULL,
@@ -5080,6 +5468,13 @@ ALTER TABLE ONLY public.circuits_circuittype ALTER COLUMN id SET DEFAULT nextval
 --
 
 ALTER TABLE ONLY public.circuits_provider ALTER COLUMN id SET DEFAULT nextval('public.circuits_provider_id_seq'::regclass);
+
+
+--
+-- Name: circuits_provider_asns id; Type: DEFAULT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.circuits_provider_asns ALTER COLUMN id SET DEFAULT nextval('public.circuits_provider_asns_id_seq'::regclass);
 
 
 --
@@ -5216,6 +5611,20 @@ ALTER TABLE ONLY public.dcim_inventoryitem ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
+-- Name: dcim_inventoryitemrole id; Type: DEFAULT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitemrole ALTER COLUMN id SET DEFAULT nextval('public.dcim_inventoryitemrole_id_seq'::regclass);
+
+
+--
+-- Name: dcim_inventoryitemtemplate id; Type: DEFAULT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitemtemplate ALTER COLUMN id SET DEFAULT nextval('public.dcim_inventoryitemtemplate_id_seq'::regclass);
+
+
+--
 -- Name: dcim_location id; Type: DEFAULT; Schema: public; Owner: netbox
 --
 
@@ -5227,6 +5636,34 @@ ALTER TABLE ONLY public.dcim_location ALTER COLUMN id SET DEFAULT nextval('publi
 --
 
 ALTER TABLE ONLY public.dcim_manufacturer ALTER COLUMN id SET DEFAULT nextval('public.dcim_manufacturer_id_seq'::regclass);
+
+
+--
+-- Name: dcim_module id; Type: DEFAULT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_module ALTER COLUMN id SET DEFAULT nextval('public.dcim_module_id_seq'::regclass);
+
+
+--
+-- Name: dcim_modulebay id; Type: DEFAULT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_modulebay ALTER COLUMN id SET DEFAULT nextval('public.dcim_modulebay_id_seq'::regclass);
+
+
+--
+-- Name: dcim_modulebaytemplate id; Type: DEFAULT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_modulebaytemplate ALTER COLUMN id SET DEFAULT nextval('public.dcim_modulebaytemplate_id_seq'::regclass);
+
+
+--
+-- Name: dcim_moduletype id; Type: DEFAULT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_moduletype ALTER COLUMN id SET DEFAULT nextval('public.dcim_moduletype_id_seq'::regclass);
 
 
 --
@@ -5381,6 +5818,13 @@ ALTER TABLE ONLY public.extras_configcontext ALTER COLUMN id SET DEFAULT nextval
 --
 
 ALTER TABLE ONLY public.extras_configcontext_cluster_groups ALTER COLUMN id SET DEFAULT nextval('public.extras_configcontext_cluster_groups_id_seq'::regclass);
+
+
+--
+-- Name: extras_configcontext_cluster_types id; Type: DEFAULT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.extras_configcontext_cluster_types ALTER COLUMN id SET DEFAULT nextval('public.extras_configcontext_cluster_types_id_seq'::regclass);
 
 
 --
@@ -5626,6 +6070,13 @@ ALTER TABLE ONLY public.ipam_service ALTER COLUMN id SET DEFAULT nextval('public
 --
 
 ALTER TABLE ONLY public.ipam_service_ipaddresses ALTER COLUMN id SET DEFAULT nextval('public.ipam_service_ipaddresses_id_seq'::regclass);
+
+
+--
+-- Name: ipam_servicetemplate id; Type: DEFAULT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.ipam_servicetemplate ALTER COLUMN id SET DEFAULT nextval('public.ipam_servicetemplate_id_seq'::regclass);
 
 
 --
@@ -6277,6 +6728,34 @@ COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
 395	Can delete wireless link	99	delete_wirelesslink
 396	Can view wireless link	99	view_wirelesslink
 397	Access admin page	100	view
+398	Can add module type	101	add_moduletype
+399	Can change module type	101	change_moduletype
+400	Can delete module type	101	delete_moduletype
+401	Can view module type	101	view_moduletype
+402	Can add module bay	102	add_modulebay
+403	Can change module bay	102	change_modulebay
+404	Can delete module bay	102	delete_modulebay
+405	Can view module bay	102	view_modulebay
+406	Can add module	103	add_module
+407	Can change module	103	change_module
+408	Can delete module	103	delete_module
+409	Can view module	103	view_module
+410	Can add module bay template	104	add_modulebaytemplate
+411	Can change module bay template	104	change_modulebaytemplate
+412	Can delete module bay template	104	delete_modulebaytemplate
+413	Can view module bay template	104	view_modulebaytemplate
+414	Can add inventory item role	105	add_inventoryitemrole
+415	Can change inventory item role	105	change_inventoryitemrole
+416	Can delete inventory item role	105	delete_inventoryitemrole
+417	Can view inventory item role	105	view_inventoryitemrole
+418	Can add inventory item template	106	add_inventoryitemtemplate
+419	Can change inventory item template	106	change_inventoryitemtemplate
+420	Can delete inventory item template	106	delete_inventoryitemtemplate
+421	Can view inventory item template	106	view_inventoryitemtemplate
+422	Can add service template	107	add_servicetemplate
+423	Can change service template	107	change_servicetemplate
+424	Can delete service template	107	delete_servicetemplate
+425	Can view service template	107	view_servicetemplate
 \.
 
 
@@ -6286,6 +6765,7 @@ COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
 
 COPY public.auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) FROM stdin;
 1	pbkdf2_sha256$260000$gRklkxpO4LkKq7qZiht8Ih$2RQhcLVAChVHDL5NtUwN3B7atgaV2MuieKpbb0+DrA0=	2022-03-24 15:05:56.273231+00	t	admin			admin@example.com	t	t	2022-03-08 17:40:31.366868+00
+2	pbkdf2_sha256$320000$wgrBMCW8mZeihh56AhBTHa$AzOQQYTGu1Aps/4TV5z1FkHN0Tdn8hTj7Wbr/BetDi4=	2022-05-03 21:18:02.862733+00	t	test			test@test.com	t	t	2022-04-25 19:10:18.7403+00
 \.
 
 
@@ -6338,10 +6818,18 @@ COPY public.circuits_provider (created, last_updated, custom_field_data, id, nam
 
 
 --
+-- Data for Name: circuits_provider_asns; Type: TABLE DATA; Schema: public; Owner: netbox
+--
+
+COPY public.circuits_provider_asns (id, provider_id, asn_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: circuits_providernetwork; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.circuits_providernetwork (created, last_updated, custom_field_data, id, name, description, comments, provider_id) FROM stdin;
+COPY public.circuits_providernetwork (created, last_updated, custom_field_data, id, name, description, comments, provider_id, service_id) FROM stdin;
 \.
 
 
@@ -6365,7 +6853,7 @@ COPY public.dcim_cablepath (id, origin_id, destination_id, path, is_active, is_s
 -- Data for Name: dcim_consoleport; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_consoleport (created, last_updated, custom_field_data, id, name, _name, label, description, _link_peer_id, mark_connected, type, speed, _link_peer_type_id, _path_id, cable_id, device_id) FROM stdin;
+COPY public.dcim_consoleport (created, last_updated, custom_field_data, id, name, _name, label, description, _link_peer_id, mark_connected, type, speed, _link_peer_type_id, _path_id, cable_id, device_id, module_id) FROM stdin;
 \.
 
 
@@ -6373,7 +6861,7 @@ COPY public.dcim_consoleport (created, last_updated, custom_field_data, id, name
 -- Data for Name: dcim_consoleporttemplate; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_consoleporttemplate (created, last_updated, id, name, _name, label, description, type, device_type_id) FROM stdin;
+COPY public.dcim_consoleporttemplate (created, last_updated, id, name, _name, label, description, type, device_type_id, module_type_id) FROM stdin;
 \.
 
 
@@ -6381,7 +6869,7 @@ COPY public.dcim_consoleporttemplate (created, last_updated, id, name, _name, la
 -- Data for Name: dcim_consoleserverport; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_consoleserverport (created, last_updated, custom_field_data, id, name, _name, label, description, _link_peer_id, mark_connected, type, speed, _link_peer_type_id, _path_id, cable_id, device_id) FROM stdin;
+COPY public.dcim_consoleserverport (created, last_updated, custom_field_data, id, name, _name, label, description, _link_peer_id, mark_connected, type, speed, _link_peer_type_id, _path_id, cable_id, device_id, module_id) FROM stdin;
 \.
 
 
@@ -6389,7 +6877,7 @@ COPY public.dcim_consoleserverport (created, last_updated, custom_field_data, id
 -- Data for Name: dcim_consoleserverporttemplate; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_consoleserverporttemplate (created, last_updated, id, name, _name, label, description, type, device_type_id) FROM stdin;
+COPY public.dcim_consoleserverporttemplate (created, last_updated, id, name, _name, label, description, type, device_type_id, module_type_id) FROM stdin;
 \.
 
 
@@ -6398,14 +6886,12 @@ COPY public.dcim_consoleserverporttemplate (created, last_updated, id, name, _na
 --
 
 COPY public.dcim_device (created, last_updated, custom_field_data, id, local_context_data, name, _name, serial, asset_tag, "position", face, status, vc_position, vc_priority, comments, cluster_id, device_role_id, device_type_id, location_id, platform_id, primary_ip4_id, primary_ip6_id, rack_id, site_id, tenant_id, virtual_chassis_id, airflow) FROM stdin;
-2022-03-08	2022-03-08 21:39:52.633116+00	{}	1	\N	us-east-dhcp-01	us-east-dhcp-00000001		\N	\N		active	\N	\N		\N	1	1	\N	\N	3	\N	\N	1	\N	\N	
-2022-03-08	2022-03-28 14:32:35.457742+00	{}	2	\N	leaf1	leaf00000001		\N	\N		active	\N	\N		\N	2	1	\N	1	2	\N	\N	1	\N	\N	
-2022-03-23	2022-03-28 14:32:35.735947+00	{}	7	\N	spine1	spine00000001		\N	\N		active	\N	\N		\N	3	1	\N	1	4	\N	\N	1	\N	\N	
-2022-03-23	2022-03-28 14:32:35.797473+00	{}	8	\N	spine2	spine00000002		\N	\N		active	\N	\N		\N	3	1	\N	1	5	\N	\N	1	\N	\N	
-2022-03-23	2022-03-28 15:42:11.988565+00	{}	4	\N	leaf3	leaf00000003		\N	\N		active	\N	\N		\N	2	1	\N	2	7	\N	\N	1	\N	\N	
-2022-03-23	2022-03-28 15:43:06.146541+00	{}	6	\N	leaf25	leaf00000025		\N	\N		active	\N	\N		\N	2	1	\N	3	8	\N	\N	1	\N	\N	
-2022-03-23	2022-03-28 15:43:50.975398+00	{}	5	\N	leaf26	leaf00000026		\N	\N		active	\N	\N		\N	2	1	\N	3	9	\N	\N	1	\N	\N	
-2022-03-23	2022-03-29 18:22:09.938292+00	{}	3	\N	leaf2	leaf00000002		\N	\N		active	\N	\N		\N	2	1	\N	3	6	\N	\N	1	\N	\N	
+2022-03-08 00:00:00+00	2022-03-08 21:39:52.633116+00	{}	1	\N	us-east-dhcp-01	us-east-dhcp-00000001		\N	\N		active	\N	\N		\N	1	1	\N	\N	3	\N	\N	1	\N	\N	
+2022-03-23 00:00:00+00	2022-03-28 14:32:35.735947+00	{}	7	\N	spine1	spine00000001		\N	\N		active	\N	\N		\N	3	1	\N	1	4	\N	\N	1	\N	\N	
+2022-03-23 00:00:00+00	2022-03-28 14:32:35.797473+00	{}	8	\N	spine2	spine00000002		\N	\N		active	\N	\N		\N	3	1	\N	1	5	\N	\N	1	\N	\N	
+2022-03-23 00:00:00+00	2022-03-28 15:42:11.988565+00	{}	4	\N	leaf3	leaf00000003		\N	\N		active	\N	\N		\N	2	1	\N	2	7	\N	\N	1	\N	\N	
+2022-03-23 00:00:00+00	2022-03-29 18:22:09.938292+00	{}	3	\N	leaf2	leaf00000002		\N	\N		active	\N	\N		\N	2	1	\N	3	6	\N	\N	1	\N	\N	
+2022-03-08 00:00:00+00	2022-05-04 13:49:13.082552+00	{}	2	\N	leaf1	leaf00000001		\N	\N		active	\N	\N		\N	2	1	\N	3	2	\N	\N	1	\N	\N	
 \.
 
 
@@ -6430,9 +6916,9 @@ COPY public.dcim_devicebaytemplate (created, last_updated, id, name, _name, labe
 --
 
 COPY public.dcim_devicerole (created, last_updated, custom_field_data, id, name, slug, color, vm_role, description) FROM stdin;
-2022-03-08	2022-03-08 21:22:11.008259+00	{}	1	dhcp	dhcp	9e9e9e	t	dhcp server
-2022-03-08	2022-03-08 21:22:26.735802+00	{}	2	leaf	leaf	9e9e9e	t	
-2022-03-23	2022-03-23 17:49:45.57464+00	{}	3	spine	spine	9e9e9e	f	spine
+2022-03-08 00:00:00+00	2022-03-08 21:22:11.008259+00	{}	1	dhcp	dhcp	9e9e9e	t	dhcp server
+2022-03-08 00:00:00+00	2022-03-08 21:22:26.735802+00	{}	2	leaf	leaf	9e9e9e	t	
+2022-03-23 00:00:00+00	2022-03-23 17:49:45.57464+00	{}	3	spine	spine	9e9e9e	f	spine
 \.
 
 
@@ -6441,7 +6927,7 @@ COPY public.dcim_devicerole (created, last_updated, custom_field_data, id, name,
 --
 
 COPY public.dcim_devicetype (created, last_updated, custom_field_data, id, model, slug, part_number, u_height, is_full_depth, subdevice_role, front_image, rear_image, comments, manufacturer_id, airflow) FROM stdin;
-2022-03-08	2022-03-08 21:24:57.901031+00	{}	1	generic	generic		1	t					1	
+2022-03-08 00:00:00+00	2022-03-08 21:24:57.901031+00	{}	1	generic	generic		1	t					1	
 \.
 
 
@@ -6449,7 +6935,7 @@ COPY public.dcim_devicetype (created, last_updated, custom_field_data, id, model
 -- Data for Name: dcim_frontport; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_frontport (created, last_updated, custom_field_data, id, name, _name, label, description, _link_peer_id, mark_connected, type, rear_port_position, _link_peer_type_id, cable_id, device_id, rear_port_id, color) FROM stdin;
+COPY public.dcim_frontport (created, last_updated, custom_field_data, id, name, _name, label, description, _link_peer_id, mark_connected, type, rear_port_position, _link_peer_type_id, cable_id, device_id, rear_port_id, color, module_id) FROM stdin;
 \.
 
 
@@ -6457,7 +6943,7 @@ COPY public.dcim_frontport (created, last_updated, custom_field_data, id, name, 
 -- Data for Name: dcim_frontporttemplate; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_frontporttemplate (created, last_updated, id, name, _name, label, description, type, rear_port_position, device_type_id, rear_port_id, color) FROM stdin;
+COPY public.dcim_frontporttemplate (created, last_updated, id, name, _name, label, description, type, rear_port_position, device_type_id, rear_port_id, color, module_type_id) FROM stdin;
 \.
 
 
@@ -6465,15 +6951,13 @@ COPY public.dcim_frontporttemplate (created, last_updated, id, name, _name, labe
 -- Data for Name: dcim_interface; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_interface (created, last_updated, custom_field_data, id, name, label, description, _link_peer_id, mark_connected, enabled, mac_address, mtu, mode, _name, type, mgmt_only, _link_peer_type_id, _path_id, cable_id, device_id, lag_id, parent_id, untagged_vlan_id, wwn, bridge_id, rf_role, rf_channel, rf_channel_frequency, rf_channel_width, tx_power, wireless_link_id) FROM stdin;
-2022-03-08	2022-03-23 20:52:57.610107+00	{}	1	mgmt			\N	f	t	0c:99:99:3d:00:00	\N		9999999999999999mgmt..................	1000base-t	t	\N	\N	\N	2	\N	\N	\N	\N	\N			\N	\N	\N	\N
-2022-03-23	2022-03-23 20:53:22.700009+00	{}	5	mgmt			\N	f	t	0c:19:82:35:00:00	\N		9999999999999999mgmt..................	1000base-t	t	\N	\N	\N	3	\N	\N	\N	\N	\N			\N	\N	\N	\N
-2022-03-23	2022-03-23 20:53:49.845383+00	{}	6	mgmt			\N	f	t	0c:20:2a:e0:00:00	\N		9999999999999999mgmt..................	1000base-t	t	\N	\N	\N	4	\N	\N	\N	\N	\N			\N	\N	\N	\N
-2022-03-23	2022-03-23 20:54:22.206962+00	{}	7	mgmt			\N	f	t	0c:94:4e:c4:00:00	\N		9999999999999999mgmt..................	1000base-t	t	\N	\N	\N	6	\N	\N	\N	\N	\N			\N	\N	\N	\N
-2022-03-23	2022-03-23 21:01:53.469366+00	{}	3	mgmt			\N	t	t	0c:4a:4d:11:00:00	\N		9999999999999999mgmt..................	1000base-t	t	\N	\N	\N	7	\N	\N	\N	\N	\N			\N	\N	\N	\N
-2022-03-23	2022-03-23 21:02:34.469094+00	{}	4	mgmt			\N	f	t	0c:ee:a8:0b:00:00	\N		9999999999999999mgmt..................	1000base-t	t	\N	\N	\N	8	\N	\N	\N	\N	\N			\N	\N	\N	\N
-2022-03-08	2022-03-24 16:47:05.560514+00	{}	2	mgmt			\N	f	t	\N	\N		9999999999999999mgmt..................	virtual	t	\N	\N	\N	1	\N	\N	\N	\N	\N			\N	\N	\N	\N
-2022-03-23	2022-03-24 18:25:20.338047+00	{}	8	mgmt			\N	f	t	0c:d7:dc:45:00:00	\N		9999999999999999mgmt..................	1000base-t	t	\N	\N	\N	5	\N	\N	\N	\N	\N			\N	\N	\N	\N
+COPY public.dcim_interface (created, last_updated, custom_field_data, id, name, label, description, _link_peer_id, mark_connected, enabled, mac_address, mtu, mode, _name, type, mgmt_only, _link_peer_type_id, _path_id, cable_id, device_id, lag_id, parent_id, untagged_vlan_id, wwn, bridge_id, rf_role, rf_channel, rf_channel_frequency, rf_channel_width, tx_power, wireless_link_id, module_id, vrf_id, duplex, speed) FROM stdin;
+2022-03-08 00:00:00+00	2022-03-23 20:52:57.610107+00	{}	1	mgmt			\N	f	t	0c:99:99:3d:00:00	\N		9999999999999999mgmt..................	1000base-t	t	\N	\N	\N	2	\N	\N	\N	\N	\N			\N	\N	\N	\N	\N	\N	\N	\N
+2022-03-23 00:00:00+00	2022-03-23 20:53:22.700009+00	{}	5	mgmt			\N	f	t	0c:19:82:35:00:00	\N		9999999999999999mgmt..................	1000base-t	t	\N	\N	\N	3	\N	\N	\N	\N	\N			\N	\N	\N	\N	\N	\N	\N	\N
+2022-03-23 00:00:00+00	2022-03-23 20:53:49.845383+00	{}	6	mgmt			\N	f	t	0c:20:2a:e0:00:00	\N		9999999999999999mgmt..................	1000base-t	t	\N	\N	\N	4	\N	\N	\N	\N	\N			\N	\N	\N	\N	\N	\N	\N	\N
+2022-03-23 00:00:00+00	2022-03-23 21:01:53.469366+00	{}	3	mgmt			\N	t	t	0c:4a:4d:11:00:00	\N		9999999999999999mgmt..................	1000base-t	t	\N	\N	\N	7	\N	\N	\N	\N	\N			\N	\N	\N	\N	\N	\N	\N	\N
+2022-03-23 00:00:00+00	2022-03-23 21:02:34.469094+00	{}	4	mgmt			\N	f	t	0c:ee:a8:0b:00:00	\N		9999999999999999mgmt..................	1000base-t	t	\N	\N	\N	8	\N	\N	\N	\N	\N			\N	\N	\N	\N	\N	\N	\N	\N
+2022-03-08 00:00:00+00	2022-03-24 16:47:05.560514+00	{}	2	mgmt			\N	f	t	\N	\N		9999999999999999mgmt..................	virtual	t	\N	\N	\N	1	\N	\N	\N	\N	\N			\N	\N	\N	\N	\N	\N	\N	\N
 \.
 
 
@@ -6497,7 +6981,7 @@ COPY public.dcim_interface_wireless_lans (id, interface_id, wirelesslan_id) FROM
 -- Data for Name: dcim_interfacetemplate; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_interfacetemplate (created, last_updated, id, name, label, description, _name, type, mgmt_only, device_type_id) FROM stdin;
+COPY public.dcim_interfacetemplate (created, last_updated, id, name, label, description, _name, type, mgmt_only, device_type_id, module_type_id) FROM stdin;
 \.
 
 
@@ -6505,7 +6989,23 @@ COPY public.dcim_interfacetemplate (created, last_updated, id, name, label, desc
 -- Data for Name: dcim_inventoryitem; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_inventoryitem (created, last_updated, custom_field_data, id, name, _name, label, description, part_id, serial, asset_tag, discovered, lft, rght, tree_id, level, device_id, manufacturer_id, parent_id) FROM stdin;
+COPY public.dcim_inventoryitem (created, last_updated, custom_field_data, id, name, _name, label, description, part_id, serial, asset_tag, discovered, lft, rght, tree_id, level, device_id, manufacturer_id, parent_id, role_id, component_id, component_type_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: dcim_inventoryitemrole; Type: TABLE DATA; Schema: public; Owner: netbox
+--
+
+COPY public.dcim_inventoryitemrole (created, last_updated, custom_field_data, id, name, slug, color, description) FROM stdin;
+\.
+
+
+--
+-- Data for Name: dcim_inventoryitemtemplate; Type: TABLE DATA; Schema: public; Owner: netbox
+--
+
+COPY public.dcim_inventoryitemtemplate (created, last_updated, id, name, _name, label, description, component_id, part_id, lft, rght, tree_id, level, component_type_id, device_type_id, manufacturer_id, parent_id, role_id) FROM stdin;
 \.
 
 
@@ -6522,7 +7022,39 @@ COPY public.dcim_location (created, last_updated, custom_field_data, id, name, s
 --
 
 COPY public.dcim_manufacturer (created, last_updated, custom_field_data, id, name, slug, description) FROM stdin;
-2022-03-08	2022-03-08 21:24:40.850684+00	{}	1	dell	dell	
+2022-03-08 00:00:00+00	2022-03-08 21:24:40.850684+00	{}	1	dell	dell	
+\.
+
+
+--
+-- Data for Name: dcim_module; Type: TABLE DATA; Schema: public; Owner: netbox
+--
+
+COPY public.dcim_module (created, last_updated, custom_field_data, id, local_context_data, serial, asset_tag, comments, device_id, module_bay_id, module_type_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: dcim_modulebay; Type: TABLE DATA; Schema: public; Owner: netbox
+--
+
+COPY public.dcim_modulebay (created, last_updated, custom_field_data, id, name, _name, label, "position", description, device_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: dcim_modulebaytemplate; Type: TABLE DATA; Schema: public; Owner: netbox
+--
+
+COPY public.dcim_modulebaytemplate (created, last_updated, id, name, _name, label, "position", description, device_type_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: dcim_moduletype; Type: TABLE DATA; Schema: public; Owner: netbox
+--
+
+COPY public.dcim_moduletype (created, last_updated, custom_field_data, id, model, part_number, comments, manufacturer_id) FROM stdin;
 \.
 
 
@@ -6531,9 +7063,9 @@ COPY public.dcim_manufacturer (created, last_updated, custom_field_data, id, nam
 --
 
 COPY public.dcim_platform (created, last_updated, custom_field_data, id, name, slug, napalm_driver, napalm_args, description, manufacturer_id) FROM stdin;
-2022-03-23	2022-03-28 16:15:24.29988+00	{}	1	Enterprise_SONiC_OS_3.3.0_Enterprise_Standard	enterprise_sonic_os_3-3-0_enterprise_standard		\N		1
-2022-03-28	2022-03-28 16:15:53.887991+00	{}	2	Enterprise_SONiC_OS_3.4.1_Enterprise_Standard	enterprise_sonic_os_3-4-1_enterprise_standard		\N		\N
-2022-03-28	2022-03-28 16:16:21.098381+00	{}	3	Enterprise_SONiC_OS_3.5.0_Enterprise_Standard	enterprise_sonic_os_3-5-0_enterprise_standard		\N		\N
+2022-03-23 00:00:00+00	2022-05-04 13:39:22.634686+00	{}	1	sonic-os-3-3-0-enterprise_base	sonic-os-3-3-0-enterprise_base		\N		1
+2022-03-28 00:00:00+00	2022-05-04 13:39:46.754551+00	{}	3	sonic-os-3-5-0-enterprise_base	sonic-os-3-5-0-enterprise_base		\N		\N
+2022-03-28 00:00:00+00	2022-05-04 13:40:08.061977+00	{}	2	sonic-os-3-4-1-enterprise_base	sonic-os-3-4-1-enterprise_base		\N		\N
 \.
 
 
@@ -6549,7 +7081,7 @@ COPY public.dcim_powerfeed (created, last_updated, custom_field_data, id, _link_
 -- Data for Name: dcim_poweroutlet; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_poweroutlet (created, last_updated, custom_field_data, id, name, _name, label, description, _link_peer_id, mark_connected, type, feed_leg, _link_peer_type_id, _path_id, cable_id, device_id, power_port_id) FROM stdin;
+COPY public.dcim_poweroutlet (created, last_updated, custom_field_data, id, name, _name, label, description, _link_peer_id, mark_connected, type, feed_leg, _link_peer_type_id, _path_id, cable_id, device_id, power_port_id, module_id) FROM stdin;
 \.
 
 
@@ -6557,7 +7089,7 @@ COPY public.dcim_poweroutlet (created, last_updated, custom_field_data, id, name
 -- Data for Name: dcim_poweroutlettemplate; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_poweroutlettemplate (created, last_updated, id, name, _name, label, description, type, feed_leg, device_type_id, power_port_id) FROM stdin;
+COPY public.dcim_poweroutlettemplate (created, last_updated, id, name, _name, label, description, type, feed_leg, device_type_id, power_port_id, module_type_id) FROM stdin;
 \.
 
 
@@ -6573,7 +7105,7 @@ COPY public.dcim_powerpanel (created, last_updated, custom_field_data, id, name,
 -- Data for Name: dcim_powerport; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_powerport (created, last_updated, custom_field_data, id, name, _name, label, description, _link_peer_id, mark_connected, type, maximum_draw, allocated_draw, _link_peer_type_id, _path_id, cable_id, device_id) FROM stdin;
+COPY public.dcim_powerport (created, last_updated, custom_field_data, id, name, _name, label, description, _link_peer_id, mark_connected, type, maximum_draw, allocated_draw, _link_peer_type_id, _path_id, cable_id, device_id, module_id) FROM stdin;
 \.
 
 
@@ -6581,7 +7113,7 @@ COPY public.dcim_powerport (created, last_updated, custom_field_data, id, name, 
 -- Data for Name: dcim_powerporttemplate; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_powerporttemplate (created, last_updated, id, name, _name, label, description, type, maximum_draw, allocated_draw, device_type_id) FROM stdin;
+COPY public.dcim_powerporttemplate (created, last_updated, id, name, _name, label, description, type, maximum_draw, allocated_draw, device_type_id, module_type_id) FROM stdin;
 \.
 
 
@@ -6613,7 +7145,7 @@ COPY public.dcim_rackrole (created, last_updated, custom_field_data, id, name, s
 -- Data for Name: dcim_rearport; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_rearport (created, last_updated, custom_field_data, id, name, _name, label, description, _link_peer_id, mark_connected, type, positions, _link_peer_type_id, cable_id, device_id, color) FROM stdin;
+COPY public.dcim_rearport (created, last_updated, custom_field_data, id, name, _name, label, description, _link_peer_id, mark_connected, type, positions, _link_peer_type_id, cable_id, device_id, color, module_id) FROM stdin;
 \.
 
 
@@ -6621,7 +7153,7 @@ COPY public.dcim_rearport (created, last_updated, custom_field_data, id, name, _
 -- Data for Name: dcim_rearporttemplate; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_rearporttemplate (created, last_updated, id, name, _name, label, description, type, positions, device_type_id, color) FROM stdin;
+COPY public.dcim_rearporttemplate (created, last_updated, id, name, _name, label, description, type, positions, device_type_id, color, module_type_id) FROM stdin;
 \.
 
 
@@ -6630,7 +7162,7 @@ COPY public.dcim_rearporttemplate (created, last_updated, id, name, _name, label
 --
 
 COPY public.dcim_region (created, last_updated, custom_field_data, id, name, slug, description, lft, rght, tree_id, level, parent_id) FROM stdin;
-2022-03-08	2022-03-08 21:32:33.295072+00	{}	1	us-east	us-east		1	2	1	0	\N
+2022-03-08 00:00:00+00	2022-03-08 21:32:33.295072+00	{}	1	us-east	us-east		1	2	1	0	\N
 \.
 
 
@@ -6638,8 +7170,8 @@ COPY public.dcim_region (created, last_updated, custom_field_data, id, name, slu
 -- Data for Name: dcim_site; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.dcim_site (created, last_updated, custom_field_data, id, name, _name, slug, status, facility, asn, time_zone, description, physical_address, shipping_address, latitude, longitude, contact_name, contact_phone, contact_email, comments, group_id, region_id, tenant_id) FROM stdin;
-2022-03-08	2022-03-08 21:33:01.622901+00	{}	1	middletown	middletown	middletown	active		\N					\N	\N					\N	1	\N
+COPY public.dcim_site (created, last_updated, custom_field_data, id, name, _name, slug, status, facility, time_zone, description, physical_address, shipping_address, latitude, longitude, comments, group_id, region_id, tenant_id) FROM stdin;
+2022-03-08 00:00:00+00	2022-03-08 21:33:01.622901+00	{}	1	middletown	middletown	middletown	active						\N	\N		\N	1	\N
 \.
 
 
@@ -6672,6 +7204,7 @@ COPY public.dcim_virtualchassis (created, last_updated, custom_field_data, id, n
 --
 
 COPY public.django_admin_log (id, action_time, object_id, object_repr, action_flag, change_message, content_type_id, user_id) FROM stdin;
+1	2022-05-03 13:45:08.579396+00	1	234567 (test)	2	[{"changed": {"fields": ["User"]}}]	90	2
 \.
 
 
@@ -6780,6 +7313,13 @@ COPY public.django_content_type (id, app_label, model) FROM stdin;
 98	wireless	wirelesslan
 99	wireless	wirelesslink
 100	django_rq	queue
+101	dcim	moduletype
+102	dcim	modulebay
+103	dcim	module
+104	dcim	modulebaytemplate
+105	dcim	inventoryitemrole
+106	dcim	inventoryitemtemplate
+107	ipam	servicetemplate
 \.
 
 
@@ -7191,6 +7731,38 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 401	tenancy	0001_squashed_0012	2022-03-08 17:39:49.944013+00
 402	users	0001_squashed_0011	2022-03-08 17:39:49.948397+00
 403	virtualization	0001_squashed_0022	2022-03-08 17:39:49.953136+00
+404	dcim	0145_site_remove_deprecated_fields	2022-04-25 18:20:24.684134+00
+405	ipam	0054_vlangroup_min_max_vids	2022-04-25 18:20:24.892867+00
+406	extras	0068_configcontext_cluster_types	2022-04-25 18:20:25.180744+00
+407	extras	0069_custom_object_field	2022-04-25 18:20:25.289038+00
+408	extras	0070_customlink_enabled	2022-04-25 18:20:25.329481+00
+409	ipam	0055_servicetemplate	2022-04-25 18:20:25.440804+00
+410	ipam	0056_standardize_id_fields	2022-04-25 18:20:27.193284+00
+411	ipam	0057_created_datetimefield	2022-04-25 18:20:28.911265+00
+412	circuits	0032_provider_service_id	2022-04-25 18:20:29.00209+00
+413	circuits	0033_standardize_id_fields	2022-04-25 18:20:29.764897+00
+414	circuits	0034_created_datetimefield	2022-04-25 18:20:30.381446+00
+415	circuits	0035_provider_asns	2022-04-25 18:20:30.480831+00
+416	dcim	0146_modules	2022-04-25 18:20:34.62977+00
+417	dcim	0147_inventoryitemrole	2022-04-25 18:20:34.833687+00
+418	dcim	0148_inventoryitem_component	2022-04-25 18:20:35.233559+00
+419	dcim	0149_inventoryitem_templates	2022-04-25 18:20:35.359392+00
+420	dcim	0150_interface_vrf	2022-04-25 18:20:35.490959+00
+421	dcim	0151_interface_speed_duplex	2022-04-25 18:20:35.678298+00
+422	dcim	0152_standardize_id_fields	2022-04-25 18:20:42.501974+00
+423	dcim	0153_created_datetimefield	2022-04-25 18:20:47.051619+00
+424	extras	0071_standardize_id_fields	2022-04-25 18:20:48.196132+00
+425	extras	0072_created_datetimefield	2022-04-25 18:20:48.951406+00
+426	extras	0073_journalentry_tags_custom_fields	2022-04-25 18:20:49.119398+00
+427	tenancy	0005_standardize_id_fields	2022-04-25 18:20:50.079053+00
+428	tenancy	0006_created_datetimefield	2022-04-25 18:20:50.690346+00
+429	tenancy	0007_contact_link	2022-04-25 18:20:50.942149+00
+430	users	0002_standardize_id_fields	2022-04-25 18:20:51.070036+00
+431	virtualization	0027_standardize_id_fields	2022-04-25 18:20:51.776229+00
+432	virtualization	0028_vminterface_vrf	2022-04-25 18:20:51.908718+00
+433	virtualization	0029_created_datetimefield	2022-04-25 18:20:52.456376+00
+434	wireless	0002_standardize_id_fields	2022-04-25 18:20:52.97898+00
+435	wireless	0003_created_datetimefield	2022-04-25 18:20:53.302632+00
 \.
 
 
@@ -7199,8 +7771,12 @@ COPY public.django_migrations (id, app, name, applied) FROM stdin;
 --
 
 COPY public.django_session (session_key, session_data, expire_date) FROM stdin;
-50ofdlvx39tsz8isz3zbso0m8b0k4fuq	.eJxVjEEKwjAQRe-StUgydpLq0gvoDUpm-kujmEKTgiDe3RZc6OJv3vu8l-niUsduKZi71JuTcWb3yyTqHXkTGVWm535TyDVprGnK-4vcoPWK-ZFKWcH5-_-LjLGMa6FFOHhEBjeiCOuIiFkG7xrl0DtHXmwv1oZIRzTWe1ZYotAOQcHm_QFFEDoa:1nX3oc:2ZTsXD8YkkaQttBFHHODnl2aPIii9lOz3cr6jC-tdZ8	2022-04-06 16:26:30.217914+00
-xl38opo4l82zv4no9wnnycp5laduqxwp	.eJxVjEEKwjAQRe-StUgydpLq0gvoDUpm-kujmEKTgiDe3RZc6OJv3vu8l-niUsduKZi71JuTcWb3yyTqHXkTGVWm535TyDVprGnK-4vcoPWK-ZFKWcH5-_-LjLGMa6FFOHhEBjeiCOuIiFkG7xrl0DtHXmwv1oZIRzTWe1ZYotAOQcHm_QFFEDoa:1nXP2C:vB_RVrfj5ciMCRdcLRUpIukDWtIp7i0WsrVPkscbHDM	2022-04-07 15:05:56.282451+00
+cz67esfiewjugub96qkdnvbalg8jelqb	.eJxVjEEKwyAQAP_iuQRdNZoe-4H0B2F1N2hLDUQDhdK_N4Ee2uvMMC8x4dbStFVep0ziLECcflnAeOdyiMItLM_uUFxajtjyUrox3Di2K6-PXOsOLt_-b5Kwpv3gQEpSEo0iA5bVDKzAa5JeWXI422jBSEIdSfaRbegNBmMHdDzoAF68PyG1OdM:1nj47S:DA7w8AMefS8KhdYrqr0qSh_0-qNoHUDrF_xDdTpzdpY	2022-05-09 19:11:34.875146+00
+6wjkui1719i6o78fda79l86i1xdxk7nd	.eJxVjEEKwyAQAP_iuQRdNZoe-4H0B2F1N2hLDUQDhdK_N4Ee2uvMMC8x4dbStFVep0ziLECcflnAeOdyiMItLM_uUFxajtjyUrox3Di2K6-PXOsOLt_-b5Kwpv3gQEpSEo0iA5bVDKzAa5JeWXI422jBSEIdSfaRbegNBmMHdDzoAF68PyG1OdM:1njhun:fpqzbwvevakfeoOJO4BcbVPNBvb8EEO9jZFYuRhkJoM	2022-05-11 13:41:09.317159+00
+jwj9jk3igxq1aca7oivzufplz6zgbrwj	.eJxVjEEKwyAQAP_iuQRdNZoe-4H0B2F1N2hLDUQDhdK_N4Ee2uvMMC8x4dbStFVep0ziLECcflnAeOdyiMItLM_uUFxajtjyUrox3Di2K6-PXOsOLt_-b5Kwpv3gQEpSEo0iA5bVDKzAa5JeWXI422jBSEIdSfaRbegNBmMHdDzoAF68PyG1OdM:1njhvf:R8vjWFRzfjig09X61VjDzgAqP60_eVDdIWHzT02SukU	2022-05-11 13:42:03.492971+00
+70d8j3sfx1p99g5mzm63snf95uy9mljm	.eJxVjEEKwyAQAP_iuQRdNZoe-4H0B2F1N2hLDUQDhdK_N4Ee2uvMMC8x4dbStFVep0ziLECcflnAeOdyiMItLM_uUFxajtjyUrox3Di2K6-PXOsOLt_-b5Kwpv3gQEpSEo0iA5bVDKzAa5JeWXI422jBSEIdSfaRbegNBmMHdDzoAF68PyG1OdM:1nlrOD:_cjQB_YeefFUzUK8V0fA-ytHO6gRaMB56DGiSR6fJDw	2022-05-17 12:12:25.781393+00
+kfu2d6bgsnjh3hlexmkqv7bte1agdg37	.eJxVjEEKwyAQAP_iuQRdNZoe-4H0B2F1N2hLDUQDhdK_N4Ee2uvMMC8x4dbStFVep0ziLECcflnAeOdyiMItLM_uUFxajtjyUrox3Di2K6-PXOsOLt_-b5Kwpv3gQEpSEo0iA5bVDKzAa5JeWXI422jBSEIdSfaRbegNBmMHdDzoAF68PyG1OdM:1nlyIV:v0Qmzrxg6K08csu19e_frR0xkxufQGAtwSbi0RUCiII	2022-05-17 19:34:59.217928+00
+81q9ma65dropmb55vt4nph99yvti4pxy	.eJxVjEEKwyAQAP_iuQRdNZoe-4H0B2F1N2hLDUQDhdK_N4Ee2uvMMC8x4dbStFVep0ziLECcflnAeOdyiMItLM_uUFxajtjyUrox3Di2K6-PXOsOLt_-b5Kwpv3gQEpSEo0iA5bVDKzAa5JeWXI422jBSEIdSfaRbegNBmMHdDzoAF68PyG1OdM:1nlzuE:KDoIL_72a7c5XPnohD7b_HVmLapVmu9MnAmuxFcV8eI	2022-05-17 21:18:02.866209+00
 \.
 
 
@@ -7217,6 +7793,14 @@ COPY public.extras_configcontext (created, last_updated, id, name, weight, descr
 --
 
 COPY public.extras_configcontext_cluster_groups (id, configcontext_id, clustergroup_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: extras_configcontext_cluster_types; Type: TABLE DATA; Schema: public; Owner: netbox
+--
+
+COPY public.extras_configcontext_cluster_types (id, configcontext_id, clustertype_id) FROM stdin;
 \.
 
 
@@ -7312,7 +7896,7 @@ COPY public.extras_configrevision (id, created, comment, data) FROM stdin;
 -- Data for Name: extras_customfield; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.extras_customfield (id, type, name, label, description, required, filter_logic, "default", weight, validation_minimum, validation_maximum, validation_regex, choices, created, last_updated) FROM stdin;
+COPY public.extras_customfield (id, type, name, label, description, required, filter_logic, "default", weight, validation_minimum, validation_maximum, validation_regex, choices, created, last_updated, object_type_id) FROM stdin;
 \.
 
 
@@ -7328,7 +7912,7 @@ COPY public.extras_customfield_content_types (id, customfield_id, contenttype_id
 -- Data for Name: extras_customlink; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.extras_customlink (id, name, link_text, link_url, weight, group_name, button_class, new_window, content_type_id, created, last_updated) FROM stdin;
+COPY public.extras_customlink (id, name, link_text, link_url, weight, group_name, button_class, new_window, content_type_id, created, last_updated, enabled) FROM stdin;
 \.
 
 
@@ -7360,7 +7944,7 @@ COPY public.extras_jobresult (id, name, created, completed, status, data, job_id
 -- Data for Name: extras_journalentry; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.extras_journalentry (last_updated, id, assigned_object_id, created, kind, comments, assigned_object_type_id, created_by_id) FROM stdin;
+COPY public.extras_journalentry (last_updated, id, assigned_object_id, created, kind, comments, assigned_object_type_id, created_by_id, custom_field_data) FROM stdin;
 \.
 
 
@@ -7470,6 +8054,20 @@ COPY public.extras_objectchange (id, "time", user_name, request_id, action, chan
 99	2022-03-28 20:20:03.007212+00	admin	4619fa4c-146e-401c-aae2-d60e0c72a204	delete	5	\N	sonic-3.3.0	{"name": "sonic-3.3.0", "slug": "sonic-3-3-0", "color": "9e9e9e", "created": "2022-03-25", "description": "", "last_updated": "2022-03-25T18:11:34.847Z"}	\N	70	\N	1
 100	2022-03-28 20:20:03.191686+00	admin	4619fa4c-146e-401c-aae2-d60e0c72a204	delete	4	\N	sonic-3.4.1	{"name": "sonic-3.4.1", "slug": "sonic-3-4-1", "color": "9e9e9e", "created": "2022-03-25", "description": "", "last_updated": "2022-03-25T18:10:35.264Z"}	\N	70	\N	1
 101	2022-03-29 18:22:09.970552+00	admin	49a2d49c-60ee-4d32-9cb6-4c9d4bc50698	update	3	\N	leaf2	{"face": "", "name": "leaf2", "rack": null, "site": 1, "tags": ["ztp"], "serial": "", "status": "active", "tenant": null, "airflow": "", "cluster": null, "created": "2022-03-23", "comments": "", "location": null, "platform": 2, "position": null, "asset_tag": null, "device_role": 2, "device_type": 1, "primary_ip4": 6, "primary_ip6": null, "vc_position": null, "vc_priority": null, "last_updated": "2022-03-28T15:41:16.873Z", "custom_fields": {}, "virtual_chassis": null, "local_context_data": null}	{"face": "", "name": "leaf2", "rack": null, "site": 1, "tags": ["ztp"], "serial": "", "status": "active", "tenant": null, "airflow": "", "cluster": null, "created": "2022-03-23", "comments": "", "location": null, "platform": 3, "position": null, "asset_tag": null, "device_role": 2, "device_type": 1, "primary_ip4": 6, "primary_ip6": null, "vc_position": null, "vc_priority": null, "last_updated": "2022-03-29T18:22:09.938Z", "custom_fields": {}, "virtual_chassis": null, "local_context_data": null}	25	\N	1
+102	2022-04-27 14:18:59.438327+00	test	0ea16031-be6d-4fc5-8662-1f42ebfd3c87	delete	7	\N	mgmt	\N	\N	32	\N	2
+103	2022-04-27 14:18:59.464412+00	test	0ea16031-be6d-4fc5-8662-1f42ebfd3c87	update	6	\N	leaf25	\N	{"face": "", "name": "leaf25", "rack": null, "site": 1, "tags": ["ztp"], "serial": "", "status": "active", "tenant": null, "airflow": "", "cluster": null, "created": "2022-03-23T00:00:00Z", "comments": "", "location": null, "platform": 3, "position": null, "asset_tag": null, "device_role": 2, "device_type": 1, "primary_ip4": 8, "primary_ip6": null, "vc_position": null, "vc_priority": null, "last_updated": "2022-04-27T14:18:59.459Z", "custom_fields": {}, "virtual_chassis": null, "local_context_data": null}	25	\N	2
+104	2022-04-27 14:18:59.486882+00	test	0ea16031-be6d-4fc5-8662-1f42ebfd3c87	delete	8	7	172.16.135.25/24	\N	\N	54	32	2
+105	2022-04-27 14:18:59.501942+00	test	0ea16031-be6d-4fc5-8662-1f42ebfd3c87	delete	6	\N	leaf25	{"face": "", "name": "leaf25", "rack": null, "site": 1, "tags": ["ztp"], "serial": "", "status": "active", "tenant": null, "airflow": "", "cluster": null, "created": "2022-03-23T00:00:00Z", "comments": "", "location": null, "platform": 3, "position": null, "asset_tag": null, "device_role": 2, "device_type": 1, "primary_ip4": 8, "primary_ip6": null, "vc_position": null, "vc_priority": null, "last_updated": "2022-03-28T15:43:06.146Z", "custom_fields": {}, "virtual_chassis": null, "local_context_data": null}	\N	25	\N	2
+106	2022-04-27 14:18:59.609631+00	test	0ea16031-be6d-4fc5-8662-1f42ebfd3c87	delete	8	\N	mgmt	\N	\N	32	\N	2
+107	2022-04-27 14:18:59.625889+00	test	0ea16031-be6d-4fc5-8662-1f42ebfd3c87	update	5	\N	leaf26	\N	{"face": "", "name": "leaf26", "rack": null, "site": 1, "tags": ["ztp"], "serial": "", "status": "active", "tenant": null, "airflow": "", "cluster": null, "created": "2022-03-23T00:00:00Z", "comments": "", "location": null, "platform": 3, "position": null, "asset_tag": null, "device_role": 2, "device_type": 1, "primary_ip4": 9, "primary_ip6": null, "vc_position": null, "vc_priority": null, "last_updated": "2022-04-27T14:18:59.623Z", "custom_fields": {}, "virtual_chassis": null, "local_context_data": null}	25	\N	2
+108	2022-04-27 14:18:59.658216+00	test	0ea16031-be6d-4fc5-8662-1f42ebfd3c87	delete	9	8	172.16.135.26/24	\N	\N	54	32	2
+109	2022-04-27 14:18:59.677135+00	test	0ea16031-be6d-4fc5-8662-1f42ebfd3c87	delete	5	\N	leaf26	{"face": "", "name": "leaf26", "rack": null, "site": 1, "tags": ["ztp"], "serial": "", "status": "active", "tenant": null, "airflow": "", "cluster": null, "created": "2022-03-23T00:00:00Z", "comments": "", "location": null, "platform": 3, "position": null, "asset_tag": null, "device_role": 2, "device_type": 1, "primary_ip4": 9, "primary_ip6": null, "vc_position": null, "vc_priority": null, "last_updated": "2022-03-28T15:43:50.975Z", "custom_fields": {}, "virtual_chassis": null, "local_context_data": null}	\N	25	\N	2
+110	2022-05-03 21:18:23.710325+00	test	fff02650-9f32-4937-ad57-b5099e836568	update	2	\N	leaf1	{"face": "", "name": "leaf1", "rack": null, "site": 1, "tags": ["ztp"], "serial": "", "status": "active", "tenant": null, "airflow": "", "cluster": null, "created": "2022-03-08T00:00:00Z", "comments": "", "location": null, "platform": 1, "position": null, "asset_tag": null, "device_role": 2, "device_type": 1, "primary_ip4": 2, "primary_ip6": null, "vc_position": null, "vc_priority": null, "last_updated": "2022-03-28T14:32:35.457Z", "custom_fields": {}, "virtual_chassis": null, "local_context_data": null}	{"face": "", "name": "leaf1", "rack": null, "site": 1, "tags": ["ztp"], "serial": "", "status": "active", "tenant": null, "airflow": "", "cluster": null, "created": "2022-03-08T00:00:00Z", "comments": "", "location": null, "platform": 3, "position": null, "asset_tag": null, "device_role": 2, "device_type": 1, "primary_ip4": 2, "primary_ip6": null, "vc_position": null, "vc_priority": null, "last_updated": "2022-05-03T21:18:23.705Z", "custom_fields": {}, "virtual_chassis": null, "local_context_data": null}	25	\N	2
+111	2022-05-04 12:09:37.617351+00	test	acb2152f-96d9-4c9c-8a35-19712139871c	update	2	\N	leaf1	{"face": "", "name": "leaf1", "rack": null, "site": 1, "tags": ["ztp"], "serial": "", "status": "active", "tenant": null, "airflow": "", "cluster": null, "created": "2022-03-08T00:00:00Z", "comments": "", "location": null, "platform": 3, "position": null, "asset_tag": null, "device_role": 2, "device_type": 1, "primary_ip4": 2, "primary_ip6": null, "vc_position": null, "vc_priority": null, "last_updated": "2022-05-03T21:18:23.705Z", "custom_fields": {}, "virtual_chassis": null, "local_context_data": null}	{"face": "", "name": "leaf1", "rack": null, "site": 1, "tags": ["ztp"], "serial": "", "status": "active", "tenant": null, "airflow": "", "cluster": null, "created": "2022-03-08T00:00:00Z", "comments": "", "location": null, "platform": 1, "position": null, "asset_tag": null, "device_role": 2, "device_type": 1, "primary_ip4": 2, "primary_ip6": null, "vc_position": null, "vc_priority": null, "last_updated": "2022-05-04T12:09:37.611Z", "custom_fields": {}, "virtual_chassis": null, "local_context_data": null}	25	\N	2
+112	2022-05-04 13:39:22.640169+00	test	80607a59-ef6a-40bd-9a15-c2cc2ba7e035	update	1	\N	sonic-os-3-3-0-enterprise_base	{"name": "Enterprise_SONiC_OS_3.3.0_Enterprise_Standard", "slug": "enterprise_sonic_os_3-3-0_enterprise_standard", "tags": [], "created": "2022-03-23T00:00:00Z", "description": "", "napalm_args": null, "last_updated": "2022-03-28T16:15:24.299Z", "manufacturer": 1, "custom_fields": {}, "napalm_driver": ""}	{"name": "sonic-os-3-3-0-enterprise_base", "slug": "sonic-os-3-3-0-enterprise_base", "tags": [], "created": "2022-03-23T00:00:00Z", "description": "", "napalm_args": null, "last_updated": "2022-05-04T13:39:22.634Z", "manufacturer": 1, "custom_fields": {}, "napalm_driver": ""}	37	\N	2
+113	2022-05-04 13:39:46.757733+00	test	b189614c-ef4d-4649-8fe8-0a2fa22d542e	update	3	\N	sonic-os-3-5-0-enterprise_base	{"name": "Enterprise_SONiC_OS_3.5.0_Enterprise_Standard", "slug": "enterprise_sonic_os_3-5-0_enterprise_standard", "tags": [], "created": "2022-03-28T00:00:00Z", "description": "", "napalm_args": null, "last_updated": "2022-03-28T16:16:21.098Z", "manufacturer": null, "custom_fields": {}, "napalm_driver": ""}	{"name": "sonic-os-3-5-0-enterprise_base", "slug": "sonic-os-3-5-0-enterprise_base", "tags": [], "created": "2022-03-28T00:00:00Z", "description": "", "napalm_args": null, "last_updated": "2022-05-04T13:39:46.754Z", "manufacturer": null, "custom_fields": {}, "napalm_driver": ""}	37	\N	2
+114	2022-05-04 13:40:08.065344+00	test	7c20cb68-4538-404c-b217-6a339a48c0a8	update	2	\N	sonic-os-3-4-1-enterprise_base	{"name": "Enterprise_SONiC_OS_3.4.1_Enterprise_Standard", "slug": "enterprise_sonic_os_3-4-1_enterprise_standard", "tags": [], "created": "2022-03-28T00:00:00Z", "description": "", "napalm_args": null, "last_updated": "2022-03-28T16:15:53.887Z", "manufacturer": null, "custom_fields": {}, "napalm_driver": ""}	{"name": "sonic-os-3-4-1-enterprise_base", "slug": "sonic-os-3-4-1-enterprise_base", "tags": [], "created": "2022-03-28T00:00:00Z", "description": "", "napalm_args": null, "last_updated": "2022-05-04T13:40:08.061Z", "manufacturer": null, "custom_fields": {}, "napalm_driver": ""}	37	\N	2
+115	2022-05-04 13:49:13.086927+00	test	fcdd2601-063f-482a-af70-73612b342b3c	update	2	\N	leaf1	{"face": "", "name": "leaf1", "rack": null, "site": 1, "tags": ["ztp"], "serial": "", "status": "active", "tenant": null, "airflow": "", "cluster": null, "created": "2022-03-08T00:00:00Z", "comments": "", "location": null, "platform": 1, "position": null, "asset_tag": null, "device_role": 2, "device_type": 1, "primary_ip4": 2, "primary_ip6": null, "vc_position": null, "vc_priority": null, "last_updated": "2022-05-04T12:09:37.611Z", "custom_fields": {}, "virtual_chassis": null, "local_context_data": null}	{"face": "", "name": "leaf1", "rack": null, "site": 1, "tags": ["ztp"], "serial": "", "status": "active", "tenant": null, "airflow": "", "cluster": null, "created": "2022-03-08T00:00:00Z", "comments": "", "location": null, "platform": 3, "position": null, "asset_tag": null, "device_role": 2, "device_type": 1, "primary_ip4": 2, "primary_ip6": null, "vc_position": null, "vc_priority": null, "last_updated": "2022-05-04T13:49:13.082Z", "custom_fields": {}, "virtual_chassis": null, "local_context_data": null}	25	\N	2
 \.
 
 
@@ -7478,9 +8076,9 @@ COPY public.extras_objectchange (id, "time", user_name, request_id, action, chan
 --
 
 COPY public.extras_tag (name, slug, created, last_updated, id, color, description) FROM stdin;
-dell_os10_10.5.2.2	dell_os10_10-5-2-2	2022-03-09	2022-03-09 15:00:00.343559+00	2	9e9e9e	
-ztp	ztp	2022-03-09	2022-03-28 14:32:13.711195+00	1	2196f3	
-sonic	sonic	2022-03-23	2022-03-28 20:19:47.938186+00	3	9e9e9e	
+dell_os10_10.5.2.2	dell_os10_10-5-2-2	2022-03-09 00:00:00+00	2022-03-09 15:00:00.343559+00	2	9e9e9e	
+ztp	ztp	2022-03-09 00:00:00+00	2022-03-28 14:32:13.711195+00	1	2196f3	
+sonic	sonic	2022-03-23 00:00:00+00	2022-03-28 20:19:47.938186+00	3	9e9e9e	
 \.
 
 
@@ -7495,10 +8093,6 @@ COPY public.extras_taggeditem (object_id, id, content_type_id, tag_id) FROM stdi
 5	5	32	3
 6	6	32	1
 6	7	32	3
-7	8	32	1
-7	9	32	3
-8	10	32	1
-8	11	32	3
 3	12	32	1
 3	13	32	3
 4	14	32	1
@@ -7506,8 +8100,6 @@ COPY public.extras_taggeditem (object_id, id, content_type_id, tag_id) FROM stdi
 2	18	25	1
 3	19	25	1
 4	20	25	1
-6	21	25	1
-5	22	25	1
 7	23	25	1
 8	24	25	1
 \.
@@ -7566,14 +8158,12 @@ COPY public.ipam_fhrpgroupassignment (created, last_updated, id, interface_id, p
 --
 
 COPY public.ipam_ipaddress (created, last_updated, custom_field_data, id, address, status, role, assigned_object_id, dns_name, description, assigned_object_type_id, nat_inside_id, tenant_id, vrf_id) FROM stdin;
-2022-03-08	2022-03-08 21:39:52.611016+00	{}	3	172.16.135.2/24	active		2			32	2	\N	\N
-2022-03-23	2022-03-23 17:59:36.992483+00	{}	5	172.16.135.5/24	active		4			32	\N	\N	\N
-2022-03-08	2022-03-23 18:03:25.40619+00	{}	2	172.16.135.6/24	active		1			32	\N	\N	\N
-2022-03-23	2022-03-23 18:24:26.750449+00	{}	8	172.16.135.25/24	active		7			32	\N	\N	\N
-2022-03-23	2022-03-23 18:25:48.71531+00	{}	9	172.16.135.26/24	active		8			32	\N	\N	\N
-2022-03-23	2022-03-23 18:26:48.112319+00	{}	6	172.16.135.7/24	active		5			32	\N	\N	\N
-2022-03-23	2022-03-23 18:28:43.839099+00	{}	7	172.16.135.8/24	active		6			32	\N	\N	\N
-2022-03-23	2022-03-23 18:30:19.899348+00	{}	4	172.16.135.4/24	active		3			32	\N	\N	\N
+2022-03-08 00:00:00+00	2022-03-08 21:39:52.611016+00	{}	3	172.16.135.2/24	active		2			32	2	\N	\N
+2022-03-23 00:00:00+00	2022-03-23 17:59:36.992483+00	{}	5	172.16.135.5/24	active		4			32	\N	\N	\N
+2022-03-08 00:00:00+00	2022-03-23 18:03:25.40619+00	{}	2	172.16.135.6/24	active		1			32	\N	\N	\N
+2022-03-23 00:00:00+00	2022-03-23 18:26:48.112319+00	{}	6	172.16.135.7/24	active		5			32	\N	\N	\N
+2022-03-23 00:00:00+00	2022-03-23 18:28:43.839099+00	{}	7	172.16.135.8/24	active		6			32	\N	\N	\N
+2022-03-23 00:00:00+00	2022-03-23 18:30:19.899348+00	{}	4	172.16.135.4/24	active		3			32	\N	\N	\N
 \.
 
 
@@ -7634,6 +8224,14 @@ COPY public.ipam_service_ipaddresses (id, service_id, ipaddress_id) FROM stdin;
 
 
 --
+-- Data for Name: ipam_servicetemplate; Type: TABLE DATA; Schema: public; Owner: netbox
+--
+
+COPY public.ipam_servicetemplate (created, last_updated, custom_field_data, id, protocol, ports, description, name) FROM stdin;
+\.
+
+
+--
 -- Data for Name: ipam_vlan; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
@@ -7645,7 +8243,7 @@ COPY public.ipam_vlan (created, last_updated, custom_field_data, id, vid, name, 
 -- Data for Name: ipam_vlangroup; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.ipam_vlangroup (created, last_updated, custom_field_data, id, name, slug, scope_id, description, scope_type_id) FROM stdin;
+COPY public.ipam_vlangroup (created, last_updated, custom_field_data, id, name, slug, scope_id, description, scope_type_id, max_vid, min_vid) FROM stdin;
 \.
 
 
@@ -7733,7 +8331,7 @@ COPY public.taggit_taggeditem (id, object_id, content_type_id, tag_id) FROM stdi
 -- Data for Name: tenancy_contact; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.tenancy_contact (created, last_updated, custom_field_data, id, name, title, phone, email, address, comments, group_id) FROM stdin;
+COPY public.tenancy_contact (created, last_updated, custom_field_data, id, name, title, phone, email, address, comments, group_id, link) FROM stdin;
 \.
 
 
@@ -7814,7 +8412,7 @@ COPY public.users_objectpermission_users (id, objectpermission_id, user_id) FROM
 --
 
 COPY public.users_token (id, created, expires, key, write_enabled, description, user_id) FROM stdin;
-1	2022-03-08 17:40:31.694868+00	\N	0123456789abcdef0123456789abcdef01234567	t		1
+1	2022-03-08 17:40:31.694868+00	\N	0123456789abcdef0123456789abcdef01234567	t		2
 \.
 
 
@@ -7824,6 +8422,7 @@ COPY public.users_token (id, created, expires, key, write_enabled, description, 
 
 COPY public.users_userconfig (id, data, user_id) FROM stdin;
 1	{"tables": {"DeviceTable": {"columns": ["name", "platform", "status", "tenant", "device_role", "manufacturer", "device_type", "site", "location", "rack", "primary_ip"]}, "InterfaceTable": {"columns": ["name", "device", "label", "enabled", "type", "description", "tags"]}}}	1
+2	{}	2
 \.
 
 
@@ -7863,7 +8462,7 @@ COPY public.virtualization_virtualmachine (created, last_updated, custom_field_d
 -- Data for Name: virtualization_vminterface; Type: TABLE DATA; Schema: public; Owner: netbox
 --
 
-COPY public.virtualization_vminterface (created, last_updated, custom_field_data, id, enabled, mac_address, mtu, mode, name, _name, description, parent_id, untagged_vlan_id, virtual_machine_id, bridge_id) FROM stdin;
+COPY public.virtualization_vminterface (created, last_updated, custom_field_data, id, enabled, mac_address, mtu, mode, name, _name, description, parent_id, untagged_vlan_id, virtual_machine_id, bridge_id, vrf_id) FROM stdin;
 \.
 
 
@@ -7917,7 +8516,7 @@ SELECT pg_catalog.setval('public.auth_group_permissions_id_seq', 1, false);
 -- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
 --
 
-SELECT pg_catalog.setval('public.auth_permission_id_seq', 397, true);
+SELECT pg_catalog.setval('public.auth_permission_id_seq', 425, true);
 
 
 --
@@ -7931,7 +8530,7 @@ SELECT pg_catalog.setval('public.auth_user_groups_id_seq', 1, false);
 -- Name: auth_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
 --
 
-SELECT pg_catalog.setval('public.auth_user_id_seq', 1, true);
+SELECT pg_catalog.setval('public.auth_user_id_seq', 2, true);
 
 
 --
@@ -7960,6 +8559,13 @@ SELECT pg_catalog.setval('public.circuits_circuittermination_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.circuits_circuittype_id_seq', 1, false);
+
+
+--
+-- Name: circuits_provider_asns_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
+--
+
+SELECT pg_catalog.setval('public.circuits_provider_asns_id_seq', 1, false);
 
 
 --
@@ -8103,6 +8709,20 @@ SELECT pg_catalog.setval('public.dcim_inventoryitem_id_seq', 1, false);
 
 
 --
+-- Name: dcim_inventoryitemrole_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
+--
+
+SELECT pg_catalog.setval('public.dcim_inventoryitemrole_id_seq', 1, false);
+
+
+--
+-- Name: dcim_inventoryitemtemplate_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
+--
+
+SELECT pg_catalog.setval('public.dcim_inventoryitemtemplate_id_seq', 1, false);
+
+
+--
 -- Name: dcim_location_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
 --
 
@@ -8114,6 +8734,34 @@ SELECT pg_catalog.setval('public.dcim_location_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.dcim_manufacturer_id_seq', 1, true);
+
+
+--
+-- Name: dcim_module_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
+--
+
+SELECT pg_catalog.setval('public.dcim_module_id_seq', 1, false);
+
+
+--
+-- Name: dcim_modulebay_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
+--
+
+SELECT pg_catalog.setval('public.dcim_modulebay_id_seq', 1, false);
+
+
+--
+-- Name: dcim_modulebaytemplate_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
+--
+
+SELECT pg_catalog.setval('public.dcim_modulebaytemplate_id_seq', 1, false);
+
+
+--
+-- Name: dcim_moduletype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
+--
+
+SELECT pg_catalog.setval('public.dcim_moduletype_id_seq', 1, false);
 
 
 --
@@ -8239,21 +8887,21 @@ SELECT pg_catalog.setval('public.dcim_virtualchassis_id_seq', 1, false);
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
 --
 
-SELECT pg_catalog.setval('public.django_admin_log_id_seq', 1, false);
+SELECT pg_catalog.setval('public.django_admin_log_id_seq', 1, true);
 
 
 --
 -- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
 --
 
-SELECT pg_catalog.setval('public.django_content_type_id_seq', 100, true);
+SELECT pg_catalog.setval('public.django_content_type_id_seq', 107, true);
 
 
 --
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
 --
 
-SELECT pg_catalog.setval('public.django_migrations_id_seq', 403, true);
+SELECT pg_catalog.setval('public.django_migrations_id_seq', 435, true);
 
 
 --
@@ -8261,6 +8909,13 @@ SELECT pg_catalog.setval('public.django_migrations_id_seq', 403, true);
 --
 
 SELECT pg_catalog.setval('public.extras_configcontext_cluster_groups_id_seq', 1, false);
+
+
+--
+-- Name: extras_configcontext_cluster_types_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
+--
+
+SELECT pg_catalog.setval('public.extras_configcontext_cluster_types_id_seq', 1, false);
 
 
 --
@@ -8400,7 +9055,7 @@ SELECT pg_catalog.setval('public.extras_journalentry_id_seq', 1, false);
 -- Name: extras_objectchange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
 --
 
-SELECT pg_catalog.setval('public.extras_objectchange_id_seq', 101, true);
+SELECT pg_catalog.setval('public.extras_objectchange_id_seq', 115, true);
 
 
 --
@@ -8513,6 +9168,13 @@ SELECT pg_catalog.setval('public.ipam_service_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.ipam_service_ipaddresses_id_seq', 1, false);
+
+
+--
+-- Name: ipam_servicetemplate_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
+--
+
+SELECT pg_catalog.setval('public.ipam_servicetemplate_id_seq', 1, false);
 
 
 --
@@ -8680,7 +9342,7 @@ SELECT pg_catalog.setval('public.users_token_id_seq', 1, true);
 -- Name: users_userconfig_id_seq; Type: SEQUENCE SET; Schema: public; Owner: netbox
 --
 
-SELECT pg_catalog.setval('public.users_userconfig_id_seq', 1, true);
+SELECT pg_catalog.setval('public.users_userconfig_id_seq', 2, true);
 
 
 --
@@ -8899,6 +9561,22 @@ ALTER TABLE ONLY public.circuits_circuittype
 
 
 --
+-- Name: circuits_provider_asns circuits_provider_asns_pkey; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.circuits_provider_asns
+    ADD CONSTRAINT circuits_provider_asns_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: circuits_provider_asns circuits_provider_asns_provider_id_asn_id_6e573798_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.circuits_provider_asns
+    ADD CONSTRAINT circuits_provider_asns_provider_id_asn_id_6e573798_uniq UNIQUE (provider_id, asn_id);
+
+
+--
 -- Name: circuits_provider circuits_provider_name_key; Type: CONSTRAINT; Schema: public; Owner: netbox
 --
 
@@ -9011,6 +9689,14 @@ ALTER TABLE ONLY public.dcim_consoleporttemplate
 
 
 --
+-- Name: dcim_consoleporttemplate dcim_consoleporttemplate_module_type_id_name_18a13ab8_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_consoleporttemplate
+    ADD CONSTRAINT dcim_consoleporttemplate_module_type_id_name_18a13ab8_uniq UNIQUE (module_type_id, name);
+
+
+--
 -- Name: dcim_consoleporttemplate dcim_consoleporttemplate_pkey; Type: CONSTRAINT; Schema: public; Owner: netbox
 --
 
@@ -9040,6 +9726,14 @@ ALTER TABLE ONLY public.dcim_consoleserverport
 
 ALTER TABLE ONLY public.dcim_consoleserverporttemplate
     ADD CONSTRAINT dcim_consoleserverportte_device_type_id_name_a05c974d_uniq UNIQUE (device_type_id, name);
+
+
+--
+-- Name: dcim_consoleserverporttemplate dcim_consoleserverportte_module_type_id_name_28b4f967_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_consoleserverporttemplate
+    ADD CONSTRAINT dcim_consoleserverportte_module_type_id_name_28b4f967_uniq UNIQUE (module_type_id, name);
 
 
 --
@@ -9227,6 +9921,14 @@ ALTER TABLE ONLY public.dcim_frontporttemplate
 
 
 --
+-- Name: dcim_frontporttemplate dcim_frontporttemplate_module_type_id_name_30ed12b9_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_frontporttemplate
+    ADD CONSTRAINT dcim_frontporttemplate_module_type_id_name_30ed12b9_uniq UNIQUE (module_type_id, name);
+
+
+--
 -- Name: dcim_frontporttemplate dcim_frontporttemplate_pkey; Type: CONSTRAINT; Schema: public; Owner: netbox
 --
 
@@ -9299,6 +10001,14 @@ ALTER TABLE ONLY public.dcim_interfacetemplate
 
 
 --
+-- Name: dcim_interfacetemplate dcim_interfacetemplate_module_type_id_name_c4d562a5_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_interfacetemplate
+    ADD CONSTRAINT dcim_interfacetemplate_module_type_id_name_c4d562a5_uniq UNIQUE (module_type_id, name);
+
+
+--
 -- Name: dcim_interfacetemplate dcim_interfacetemplate_pkey; Type: CONSTRAINT; Schema: public; Owner: netbox
 --
 
@@ -9328,6 +10038,46 @@ ALTER TABLE ONLY public.dcim_inventoryitem
 
 ALTER TABLE ONLY public.dcim_inventoryitem
     ADD CONSTRAINT dcim_inventoryitem_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dcim_inventoryitemrole dcim_inventoryitemrole_name_key; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitemrole
+    ADD CONSTRAINT dcim_inventoryitemrole_name_key UNIQUE (name);
+
+
+--
+-- Name: dcim_inventoryitemrole dcim_inventoryitemrole_pkey; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitemrole
+    ADD CONSTRAINT dcim_inventoryitemrole_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dcim_inventoryitemrole dcim_inventoryitemrole_slug_key; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitemrole
+    ADD CONSTRAINT dcim_inventoryitemrole_slug_key UNIQUE (slug);
+
+
+--
+-- Name: dcim_inventoryitemtemplate dcim_inventoryitemtempla_device_type_id_parent_id_edaaf836_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitemtemplate
+    ADD CONSTRAINT dcim_inventoryitemtempla_device_type_id_parent_id_edaaf836_uniq UNIQUE (device_type_id, parent_id, name);
+
+
+--
+-- Name: dcim_inventoryitemtemplate dcim_inventoryitemtemplate_pkey; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitemtemplate
+    ADD CONSTRAINT dcim_inventoryitemtemplate_pkey PRIMARY KEY (id);
 
 
 --
@@ -9376,6 +10126,78 @@ ALTER TABLE ONLY public.dcim_manufacturer
 
 ALTER TABLE ONLY public.dcim_manufacturer
     ADD CONSTRAINT dcim_manufacturer_slug_key UNIQUE (slug);
+
+
+--
+-- Name: dcim_module dcim_module_asset_tag_key; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_module
+    ADD CONSTRAINT dcim_module_asset_tag_key UNIQUE (asset_tag);
+
+
+--
+-- Name: dcim_module dcim_module_module_bay_id_key; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_module
+    ADD CONSTRAINT dcim_module_module_bay_id_key UNIQUE (module_bay_id);
+
+
+--
+-- Name: dcim_module dcim_module_pkey; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_module
+    ADD CONSTRAINT dcim_module_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dcim_modulebay dcim_modulebay_device_id_name_c05905b8_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_modulebay
+    ADD CONSTRAINT dcim_modulebay_device_id_name_c05905b8_uniq UNIQUE (device_id, name);
+
+
+--
+-- Name: dcim_modulebay dcim_modulebay_pkey; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_modulebay
+    ADD CONSTRAINT dcim_modulebay_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dcim_modulebaytemplate dcim_modulebaytemplate_device_type_id_name_8ba454cc_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_modulebaytemplate
+    ADD CONSTRAINT dcim_modulebaytemplate_device_type_id_name_8ba454cc_uniq UNIQUE (device_type_id, name);
+
+
+--
+-- Name: dcim_modulebaytemplate dcim_modulebaytemplate_pkey; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_modulebaytemplate
+    ADD CONSTRAINT dcim_modulebaytemplate_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dcim_moduletype dcim_moduletype_manufacturer_id_model_bd40def7_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_moduletype
+    ADD CONSTRAINT dcim_moduletype_manufacturer_id_model_bd40def7_uniq UNIQUE (manufacturer_id, model);
+
+
+--
+-- Name: dcim_moduletype dcim_moduletype_pkey; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_moduletype
+    ADD CONSTRAINT dcim_moduletype_pkey PRIMARY KEY (id);
 
 
 --
@@ -9443,6 +10265,14 @@ ALTER TABLE ONLY public.dcim_poweroutlettemplate
 
 
 --
+-- Name: dcim_poweroutlettemplate dcim_poweroutlettemplate_module_type_id_name_e908a87e_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_poweroutlettemplate
+    ADD CONSTRAINT dcim_poweroutlettemplate_module_type_id_name_e908a87e_uniq UNIQUE (module_type_id, name);
+
+
+--
 -- Name: dcim_poweroutlettemplate dcim_poweroutlettemplate_pkey; Type: CONSTRAINT; Schema: public; Owner: netbox
 --
 
@@ -9488,6 +10318,14 @@ ALTER TABLE ONLY public.dcim_powerport
 
 ALTER TABLE ONLY public.dcim_powerporttemplate
     ADD CONSTRAINT dcim_powerporttemplate_device_type_id_name_b4e9689f_uniq UNIQUE (device_type_id, name);
+
+
+--
+-- Name: dcim_powerporttemplate dcim_powerporttemplate_module_type_id_name_17b0ffd1_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_powerporttemplate
+    ADD CONSTRAINT dcim_powerporttemplate_module_type_id_name_17b0ffd1_uniq UNIQUE (module_type_id, name);
 
 
 --
@@ -9584,6 +10422,14 @@ ALTER TABLE ONLY public.dcim_rearport
 
 ALTER TABLE ONLY public.dcim_rearporttemplate
     ADD CONSTRAINT dcim_rearporttemplate_device_type_id_name_9bdddb29_uniq UNIQUE (device_type_id, name);
+
+
+--
+-- Name: dcim_rearporttemplate dcim_rearporttemplate_module_type_id_name_785a9c4c_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_rearporttemplate
+    ADD CONSTRAINT dcim_rearporttemplate_module_type_id_name_785a9c4c_uniq UNIQUE (module_type_id, name);
 
 
 --
@@ -9747,6 +10593,14 @@ ALTER TABLE ONLY public.extras_configcontext_clusters
 
 
 --
+-- Name: extras_configcontext_cluster_types extras_configcontext_clu_configcontext_id_cluster_4a2d5e56_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.extras_configcontext_cluster_types
+    ADD CONSTRAINT extras_configcontext_clu_configcontext_id_cluster_4a2d5e56_uniq UNIQUE (configcontext_id, clustertype_id);
+
+
+--
 -- Name: extras_configcontext_cluster_groups extras_configcontext_clu_configcontext_id_cluster_bc530192_uniq; Type: CONSTRAINT; Schema: public; Owner: netbox
 --
 
@@ -9760,6 +10614,14 @@ ALTER TABLE ONLY public.extras_configcontext_cluster_groups
 
 ALTER TABLE ONLY public.extras_configcontext_cluster_groups
     ADD CONSTRAINT extras_configcontext_cluster_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: extras_configcontext_cluster_types extras_configcontext_cluster_types_pkey; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.extras_configcontext_cluster_types
+    ADD CONSTRAINT extras_configcontext_cluster_types_pkey PRIMARY KEY (id);
 
 
 --
@@ -10280,6 +11142,22 @@ ALTER TABLE ONLY public.ipam_service_ipaddresses
 
 ALTER TABLE ONLY public.ipam_service
     ADD CONSTRAINT ipam_service_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ipam_servicetemplate ipam_servicetemplate_name_key; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.ipam_servicetemplate
+    ADD CONSTRAINT ipam_servicetemplate_name_key UNIQUE (name);
+
+
+--
+-- Name: ipam_servicetemplate ipam_servicetemplate_pkey; Type: CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.ipam_servicetemplate
+    ADD CONSTRAINT ipam_servicetemplate_pkey PRIMARY KEY (id);
 
 
 --
@@ -11038,6 +11916,20 @@ CREATE INDEX circuits_circuittype_slug_9b4b3cf9_like ON public.circuits_circuitt
 
 
 --
+-- Name: circuits_provider_asns_asn_id_0a6c53b3; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX circuits_provider_asns_asn_id_0a6c53b3 ON public.circuits_provider_asns USING btree (asn_id);
+
+
+--
+-- Name: circuits_provider_asns_provider_id_becc3f7e; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX circuits_provider_asns_provider_id_becc3f7e ON public.circuits_provider_asns USING btree (provider_id);
+
+
+--
 -- Name: circuits_provider_name_8f2514f5_like; Type: INDEX; Schema: public; Owner: netbox
 --
 
@@ -11136,10 +12028,24 @@ CREATE INDEX dcim_consoleport_device_id_f2d90d3c ON public.dcim_consoleport USIN
 
 
 --
+-- Name: dcim_consoleport_module_id_d17b2519; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_consoleport_module_id_d17b2519 ON public.dcim_consoleport USING btree (module_id);
+
+
+--
 -- Name: dcim_consoleporttemplate_device_type_id_075d4015; Type: INDEX; Schema: public; Owner: netbox
 --
 
 CREATE INDEX dcim_consoleporttemplate_device_type_id_075d4015 ON public.dcim_consoleporttemplate USING btree (device_type_id);
+
+
+--
+-- Name: dcim_consoleporttemplate_module_type_id_c0f35d97; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_consoleporttemplate_module_type_id_c0f35d97 ON public.dcim_consoleporttemplate USING btree (module_type_id);
 
 
 --
@@ -11171,10 +12077,24 @@ CREATE INDEX dcim_consoleserverport_device_id_d9866581 ON public.dcim_consoleser
 
 
 --
+-- Name: dcim_consoleserverport_module_id_d060cfc8; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_consoleserverport_module_id_d060cfc8 ON public.dcim_consoleserverport USING btree (module_id);
+
+
+--
 -- Name: dcim_consoleserverporttemplate_device_type_id_579bdc86; Type: INDEX; Schema: public; Owner: netbox
 --
 
 CREATE INDEX dcim_consoleserverporttemplate_device_type_id_579bdc86 ON public.dcim_consoleserverporttemplate USING btree (device_type_id);
+
+
+--
+-- Name: dcim_consoleserverporttemplate_module_type_id_4abf751a; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_consoleserverporttemplate_module_type_id_4abf751a ON public.dcim_consoleserverporttemplate USING btree (module_type_id);
 
 
 --
@@ -11318,6 +12238,13 @@ CREATE INDEX dcim_frontport_device_id_950557b5 ON public.dcim_frontport USING bt
 
 
 --
+-- Name: dcim_frontport_module_id_952c3f9a; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_frontport_module_id_952c3f9a ON public.dcim_frontport USING btree (module_id);
+
+
+--
 -- Name: dcim_frontport_rear_port_id_78df2532; Type: INDEX; Schema: public; Owner: netbox
 --
 
@@ -11329,6 +12256,13 @@ CREATE INDEX dcim_frontport_rear_port_id_78df2532 ON public.dcim_frontport USING
 --
 
 CREATE INDEX dcim_frontporttemplate_device_type_id_f088b952 ON public.dcim_frontporttemplate USING btree (device_type_id);
+
+
+--
+-- Name: dcim_frontporttemplate_module_type_id_66851ff9; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_frontporttemplate_module_type_id_66851ff9 ON public.dcim_frontporttemplate USING btree (module_type_id);
 
 
 --
@@ -11381,6 +12315,13 @@ CREATE INDEX dcim_interface_lag_id_ea1a1d12 ON public.dcim_interface USING btree
 
 
 --
+-- Name: dcim_interface_module_id_05ca2da5; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_interface_module_id_05ca2da5 ON public.dcim_interface USING btree (module_id);
+
+
+--
 -- Name: dcim_interface_parent_id_3e2b159b; Type: INDEX; Schema: public; Owner: netbox
 --
 
@@ -11406,6 +12347,13 @@ CREATE INDEX dcim_interface_tagged_vlans_vlan_id_e027005c ON public.dcim_interfa
 --
 
 CREATE INDEX dcim_interface_untagged_vlan_id_838dc7be ON public.dcim_interface USING btree (untagged_vlan_id);
+
+
+--
+-- Name: dcim_interface_vrf_id_a92e59b2; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_interface_vrf_id_a92e59b2 ON public.dcim_interface USING btree (vrf_id);
 
 
 --
@@ -11437,10 +12385,24 @@ CREATE INDEX dcim_interfacetemplate_device_type_id_4bfcbfab ON public.dcim_inter
 
 
 --
+-- Name: dcim_interfacetemplate_module_type_id_f941f180; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_interfacetemplate_module_type_id_f941f180 ON public.dcim_interfacetemplate USING btree (module_type_id);
+
+
+--
 -- Name: dcim_inventoryitem_asset_tag_d3289273_like; Type: INDEX; Schema: public; Owner: netbox
 --
 
 CREATE INDEX dcim_inventoryitem_asset_tag_d3289273_like ON public.dcim_inventoryitem USING btree (asset_tag varchar_pattern_ops);
+
+
+--
+-- Name: dcim_inventoryitem_component_type_id_f0e4d83a; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_inventoryitem_component_type_id_f0e4d83a ON public.dcim_inventoryitem USING btree (component_type_id);
 
 
 --
@@ -11465,10 +12427,73 @@ CREATE INDEX dcim_inventoryitem_parent_id_7ebcd457 ON public.dcim_inventoryitem 
 
 
 --
+-- Name: dcim_inventoryitem_role_id_2bcfcb04; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_inventoryitem_role_id_2bcfcb04 ON public.dcim_inventoryitem USING btree (role_id);
+
+
+--
 -- Name: dcim_inventoryitem_tree_id_4676ade2; Type: INDEX; Schema: public; Owner: netbox
 --
 
 CREATE INDEX dcim_inventoryitem_tree_id_4676ade2 ON public.dcim_inventoryitem USING btree (tree_id);
+
+
+--
+-- Name: dcim_inventoryitemrole_name_4c8cfe6d_like; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_inventoryitemrole_name_4c8cfe6d_like ON public.dcim_inventoryitemrole USING btree (name varchar_pattern_ops);
+
+
+--
+-- Name: dcim_inventoryitemrole_slug_3556c227_like; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_inventoryitemrole_slug_3556c227_like ON public.dcim_inventoryitemrole USING btree (slug varchar_pattern_ops);
+
+
+--
+-- Name: dcim_inventoryitemtemplate_component_type_id_161623a2; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_inventoryitemtemplate_component_type_id_161623a2 ON public.dcim_inventoryitemtemplate USING btree (component_type_id);
+
+
+--
+-- Name: dcim_inventoryitemtemplate_device_type_id_6a1be904; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_inventoryitemtemplate_device_type_id_6a1be904 ON public.dcim_inventoryitemtemplate USING btree (device_type_id);
+
+
+--
+-- Name: dcim_inventoryitemtemplate_manufacturer_id_b388c5d9; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_inventoryitemtemplate_manufacturer_id_b388c5d9 ON public.dcim_inventoryitemtemplate USING btree (manufacturer_id);
+
+
+--
+-- Name: dcim_inventoryitemtemplate_parent_id_0dac73bb; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_inventoryitemtemplate_parent_id_0dac73bb ON public.dcim_inventoryitemtemplate USING btree (parent_id);
+
+
+--
+-- Name: dcim_inventoryitemtemplate_role_id_292676e6; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_inventoryitemtemplate_role_id_292676e6 ON public.dcim_inventoryitemtemplate USING btree (role_id);
+
+
+--
+-- Name: dcim_inventoryitemtemplate_tree_id_75ebcb8e; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_inventoryitemtemplate_tree_id_75ebcb8e ON public.dcim_inventoryitemtemplate USING btree (tree_id);
 
 
 --
@@ -11539,6 +12564,48 @@ CREATE INDEX dcim_manufacturer_name_841fcd92_like ON public.dcim_manufacturer US
 --
 
 CREATE INDEX dcim_manufacturer_slug_00430749_like ON public.dcim_manufacturer USING btree (slug varchar_pattern_ops);
+
+
+--
+-- Name: dcim_module_asset_tag_2fd91eed_like; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_module_asset_tag_2fd91eed_like ON public.dcim_module USING btree (asset_tag varchar_pattern_ops);
+
+
+--
+-- Name: dcim_module_device_id_53cfd5be; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_module_device_id_53cfd5be ON public.dcim_module USING btree (device_id);
+
+
+--
+-- Name: dcim_module_module_type_id_a50b39fc; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_module_module_type_id_a50b39fc ON public.dcim_module USING btree (module_type_id);
+
+
+--
+-- Name: dcim_modulebay_device_id_3526abc2; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_modulebay_device_id_3526abc2 ON public.dcim_modulebay USING btree (device_id);
+
+
+--
+-- Name: dcim_modulebaytemplate_device_type_id_9eaf9bd3; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_modulebaytemplate_device_type_id_9eaf9bd3 ON public.dcim_modulebaytemplate USING btree (device_type_id);
+
+
+--
+-- Name: dcim_moduletype_manufacturer_id_7347392e; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_moduletype_manufacturer_id_7347392e ON public.dcim_moduletype USING btree (manufacturer_id);
 
 
 --
@@ -11626,6 +12693,13 @@ CREATE INDEX dcim_poweroutlet_device_id_286351d7 ON public.dcim_poweroutlet USIN
 
 
 --
+-- Name: dcim_poweroutlet_module_id_032f5af2; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_poweroutlet_module_id_032f5af2 ON public.dcim_poweroutlet USING btree (module_id);
+
+
+--
 -- Name: dcim_poweroutlet_power_port_id_9bdf4163; Type: INDEX; Schema: public; Owner: netbox
 --
 
@@ -11637,6 +12711,13 @@ CREATE INDEX dcim_poweroutlet_power_port_id_9bdf4163 ON public.dcim_poweroutlet 
 --
 
 CREATE INDEX dcim_poweroutlettemplate_device_type_id_26b2316c ON public.dcim_poweroutlettemplate USING btree (device_type_id);
+
+
+--
+-- Name: dcim_poweroutlettemplate_module_type_id_6142b416; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_poweroutlettemplate_module_type_id_6142b416 ON public.dcim_poweroutlettemplate USING btree (module_type_id);
 
 
 --
@@ -11689,10 +12770,24 @@ CREATE INDEX dcim_powerport_device_id_ef7185ae ON public.dcim_powerport USING bt
 
 
 --
+-- Name: dcim_powerport_module_id_d0c27534; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_powerport_module_id_d0c27534 ON public.dcim_powerport USING btree (module_id);
+
+
+--
 -- Name: dcim_powerporttemplate_device_type_id_1ddfbfcc; Type: INDEX; Schema: public; Owner: netbox
 --
 
 CREATE INDEX dcim_powerporttemplate_device_type_id_1ddfbfcc ON public.dcim_powerporttemplate USING btree (device_type_id);
+
+
+--
+-- Name: dcim_powerporttemplate_module_type_id_93e26849; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_powerporttemplate_module_type_id_93e26849 ON public.dcim_powerporttemplate USING btree (module_type_id);
 
 
 --
@@ -11787,10 +12882,24 @@ CREATE INDEX dcim_rearport_device_id_0bdfe9c0 ON public.dcim_rearport USING btre
 
 
 --
+-- Name: dcim_rearport_module_id_9a7b7e91; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_rearport_module_id_9a7b7e91 ON public.dcim_rearport USING btree (module_id);
+
+
+--
 -- Name: dcim_rearporttemplate_device_type_id_6a02fd01; Type: INDEX; Schema: public; Owner: netbox
 --
 
 CREATE INDEX dcim_rearporttemplate_device_type_id_6a02fd01 ON public.dcim_rearporttemplate USING btree (device_type_id);
+
+
+--
+-- Name: dcim_rearporttemplate_module_type_id_4d970e5b; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX dcim_rearporttemplate_module_type_id_4d970e5b ON public.dcim_rearporttemplate USING btree (module_type_id);
 
 
 --
@@ -11969,6 +13078,20 @@ CREATE INDEX extras_configcontext_cluster_groups_configcontext_id_8f50b794 ON pu
 
 
 --
+-- Name: extras_configcontext_cluster_types_clustertype_id_fa493b64; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX extras_configcontext_cluster_types_clustertype_id_fa493b64 ON public.extras_configcontext_cluster_types USING btree (clustertype_id);
+
+
+--
+-- Name: extras_configcontext_cluster_types_configcontext_id_d549b6f2; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX extras_configcontext_cluster_types_configcontext_id_d549b6f2 ON public.extras_configcontext_cluster_types USING btree (configcontext_id);
+
+
+--
 -- Name: extras_configcontext_clusters_cluster_id_6abd47a1; Type: INDEX; Schema: public; Owner: netbox
 --
 
@@ -12134,6 +13257,13 @@ CREATE INDEX extras_customfield_content_types_customfield_id_3842aaf3 ON public.
 --
 
 CREATE INDEX extras_customfield_name_2fe72707_like ON public.extras_customfield USING btree (name varchar_pattern_ops);
+
+
+--
+-- Name: extras_customfield_object_type_id_489f2239; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX extras_customfield_object_type_id_489f2239 ON public.extras_customfield USING btree (object_type_id);
 
 
 --
@@ -12470,6 +13600,13 @@ CREATE INDEX ipam_service_ipaddresses_service_id_ae26b9ab ON public.ipam_service
 --
 
 CREATE INDEX ipam_service_virtual_machine_id_e8b53562 ON public.ipam_service USING btree (virtual_machine_id);
+
+
+--
+-- Name: ipam_servicetemplate_name_1a2f3410_like; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX ipam_servicetemplate_name_1a2f3410_like ON public.ipam_servicetemplate USING btree (name varchar_pattern_ops);
 
 
 --
@@ -12970,6 +14107,13 @@ CREATE INDEX virtualization_vminterface_virtual_machine_id_e9f89829 ON public.vi
 
 
 --
+-- Name: virtualization_vminterface_vrf_id_4b570a8c; Type: INDEX; Schema: public; Owner: netbox
+--
+
+CREATE INDEX virtualization_vminterface_vrf_id_4b570a8c ON public.virtualization_vminterface USING btree (vrf_id);
+
+
+--
 -- Name: wireless_wirelesslan_group_id_d9e3d67f; Type: INDEX; Schema: public; Owner: netbox
 --
 
@@ -13176,6 +14320,22 @@ ALTER TABLE ONLY public.circuits_circuittermination
 
 
 --
+-- Name: circuits_provider_asns circuits_provider_as_provider_id_becc3f7e_fk_circuits_; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.circuits_provider_asns
+    ADD CONSTRAINT circuits_provider_as_provider_id_becc3f7e_fk_circuits_ FOREIGN KEY (provider_id) REFERENCES public.circuits_provider(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: circuits_provider_asns circuits_provider_asns_asn_id_0a6c53b3_fk_ipam_asn_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.circuits_provider_asns
+    ADD CONSTRAINT circuits_provider_asns_asn_id_0a6c53b3_fk_ipam_asn_id FOREIGN KEY (asn_id) REFERENCES public.ipam_asn(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: circuits_providernetwork circuits_providernet_provider_id_7992236c_fk_circuits_; Type: FK CONSTRAINT; Schema: public; Owner: netbox
 --
 
@@ -13272,11 +14432,27 @@ ALTER TABLE ONLY public.dcim_consoleport
 
 
 --
+-- Name: dcim_consoleport dcim_consoleport_module_id_d17b2519_fk_dcim_module_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_consoleport
+    ADD CONSTRAINT dcim_consoleport_module_id_d17b2519_fk_dcim_module_id FOREIGN KEY (module_id) REFERENCES public.dcim_module(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: dcim_consoleporttemplate dcim_consoleporttemp_device_type_id_075d4015_fk_dcim_devi; Type: FK CONSTRAINT; Schema: public; Owner: netbox
 --
 
 ALTER TABLE ONLY public.dcim_consoleporttemplate
     ADD CONSTRAINT dcim_consoleporttemp_device_type_id_075d4015_fk_dcim_devi FOREIGN KEY (device_type_id) REFERENCES public.dcim_devicetype(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_consoleporttemplate dcim_consoleporttemp_module_type_id_c0f35d97_fk_dcim_modu; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_consoleporttemplate
+    ADD CONSTRAINT dcim_consoleporttemp_module_type_id_c0f35d97_fk_dcim_modu FOREIGN KEY (module_type_id) REFERENCES public.dcim_moduletype(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -13293,6 +14469,14 @@ ALTER TABLE ONLY public.dcim_consoleserverport
 
 ALTER TABLE ONLY public.dcim_consoleserverporttemplate
     ADD CONSTRAINT dcim_consoleserverpo_device_type_id_579bdc86_fk_dcim_devi FOREIGN KEY (device_type_id) REFERENCES public.dcim_devicetype(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_consoleserverporttemplate dcim_consoleserverpo_module_type_id_4abf751a_fk_dcim_modu; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_consoleserverporttemplate
+    ADD CONSTRAINT dcim_consoleserverpo_module_type_id_4abf751a_fk_dcim_modu FOREIGN KEY (module_type_id) REFERENCES public.dcim_moduletype(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -13317,6 +14501,14 @@ ALTER TABLE ONLY public.dcim_consoleserverport
 
 ALTER TABLE ONLY public.dcim_consoleserverport
     ADD CONSTRAINT dcim_consoleserverport_device_id_d9866581_fk_dcim_device_id FOREIGN KEY (device_id) REFERENCES public.dcim_device(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_consoleserverport dcim_consoleserverport_module_id_d060cfc8_fk_dcim_module_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_consoleserverport
+    ADD CONSTRAINT dcim_consoleserverport_module_id_d060cfc8_fk_dcim_module_id FOREIGN KEY (module_id) REFERENCES public.dcim_module(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -13464,6 +14656,14 @@ ALTER TABLE ONLY public.dcim_frontport
 
 
 --
+-- Name: dcim_frontport dcim_frontport_module_id_952c3f9a_fk_dcim_module_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_frontport
+    ADD CONSTRAINT dcim_frontport_module_id_952c3f9a_fk_dcim_module_id FOREIGN KEY (module_id) REFERENCES public.dcim_module(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: dcim_frontport dcim_frontport_rear_port_id_78df2532_fk_dcim_rearport_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
 --
 
@@ -13477,6 +14677,14 @@ ALTER TABLE ONLY public.dcim_frontport
 
 ALTER TABLE ONLY public.dcim_frontporttemplate
     ADD CONSTRAINT dcim_frontporttempla_device_type_id_f088b952_fk_dcim_devi FOREIGN KEY (device_type_id) REFERENCES public.dcim_devicetype(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_frontporttemplate dcim_frontporttempla_module_type_id_66851ff9_fk_dcim_modu; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_frontporttemplate
+    ADD CONSTRAINT dcim_frontporttempla_module_type_id_66851ff9_fk_dcim_modu FOREIGN KEY (module_type_id) REFERENCES public.dcim_moduletype(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -13536,6 +14744,14 @@ ALTER TABLE ONLY public.dcim_interface
 
 
 --
+-- Name: dcim_interface dcim_interface_module_id_05ca2da5_fk_dcim_module_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_interface
+    ADD CONSTRAINT dcim_interface_module_id_05ca2da5_fk_dcim_module_id FOREIGN KEY (module_id) REFERENCES public.dcim_module(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: dcim_interface dcim_interface_parent_id_3e2b159b_fk_dcim_interface_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
 --
 
@@ -13565,6 +14781,14 @@ ALTER TABLE ONLY public.dcim_interface_tagged_vlans
 
 ALTER TABLE ONLY public.dcim_interface
     ADD CONSTRAINT dcim_interface_untagged_vlan_id_838dc7be_fk_ipam_vlan_id FOREIGN KEY (untagged_vlan_id) REFERENCES public.ipam_vlan(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_interface dcim_interface_vrf_id_a92e59b2_fk_ipam_vrf_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_interface
+    ADD CONSTRAINT dcim_interface_vrf_id_a92e59b2_fk_ipam_vrf_id FOREIGN KEY (vrf_id) REFERENCES public.ipam_vrf(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -13600,6 +14824,22 @@ ALTER TABLE ONLY public.dcim_interfacetemplate
 
 
 --
+-- Name: dcim_interfacetemplate dcim_interfacetempla_module_type_id_f941f180_fk_dcim_modu; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_interfacetemplate
+    ADD CONSTRAINT dcim_interfacetempla_module_type_id_f941f180_fk_dcim_modu FOREIGN KEY (module_type_id) REFERENCES public.dcim_moduletype(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_inventoryitem dcim_inventoryitem_component_type_id_f0e4d83a_fk_django_co; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitem
+    ADD CONSTRAINT dcim_inventoryitem_component_type_id_f0e4d83a_fk_django_co FOREIGN KEY (component_type_id) REFERENCES public.django_content_type(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: dcim_inventoryitem dcim_inventoryitem_device_id_033d83f8_fk_dcim_device_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
 --
 
@@ -13624,6 +14864,54 @@ ALTER TABLE ONLY public.dcim_inventoryitem
 
 
 --
+-- Name: dcim_inventoryitem dcim_inventoryitem_role_id_2bcfcb04_fk_dcim_inve; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitem
+    ADD CONSTRAINT dcim_inventoryitem_role_id_2bcfcb04_fk_dcim_inve FOREIGN KEY (role_id) REFERENCES public.dcim_inventoryitemrole(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_inventoryitemtemplate dcim_inventoryitemte_component_type_id_161623a2_fk_django_co; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitemtemplate
+    ADD CONSTRAINT dcim_inventoryitemte_component_type_id_161623a2_fk_django_co FOREIGN KEY (component_type_id) REFERENCES public.django_content_type(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_inventoryitemtemplate dcim_inventoryitemte_device_type_id_6a1be904_fk_dcim_devi; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitemtemplate
+    ADD CONSTRAINT dcim_inventoryitemte_device_type_id_6a1be904_fk_dcim_devi FOREIGN KEY (device_type_id) REFERENCES public.dcim_devicetype(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_inventoryitemtemplate dcim_inventoryitemte_manufacturer_id_b388c5d9_fk_dcim_manu; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitemtemplate
+    ADD CONSTRAINT dcim_inventoryitemte_manufacturer_id_b388c5d9_fk_dcim_manu FOREIGN KEY (manufacturer_id) REFERENCES public.dcim_manufacturer(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_inventoryitemtemplate dcim_inventoryitemte_parent_id_0dac73bb_fk_dcim_inve; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitemtemplate
+    ADD CONSTRAINT dcim_inventoryitemte_parent_id_0dac73bb_fk_dcim_inve FOREIGN KEY (parent_id) REFERENCES public.dcim_inventoryitemtemplate(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_inventoryitemtemplate dcim_inventoryitemte_role_id_292676e6_fk_dcim_inve; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_inventoryitemtemplate
+    ADD CONSTRAINT dcim_inventoryitemte_role_id_292676e6_fk_dcim_inve FOREIGN KEY (role_id) REFERENCES public.dcim_inventoryitemrole(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: dcim_location dcim_location_parent_id_d77f3318_fk_dcim_location_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
 --
 
@@ -13645,6 +14933,54 @@ ALTER TABLE ONLY public.dcim_location
 
 ALTER TABLE ONLY public.dcim_location
     ADD CONSTRAINT dcim_location_tenant_id_2c4df974_fk_tenancy_tenant_id FOREIGN KEY (tenant_id) REFERENCES public.tenancy_tenant(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_module dcim_module_device_id_53cfd5be_fk_dcim_device_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_module
+    ADD CONSTRAINT dcim_module_device_id_53cfd5be_fk_dcim_device_id FOREIGN KEY (device_id) REFERENCES public.dcim_device(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_module dcim_module_module_bay_id_8a1bf3e2_fk_dcim_modulebay_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_module
+    ADD CONSTRAINT dcim_module_module_bay_id_8a1bf3e2_fk_dcim_modulebay_id FOREIGN KEY (module_bay_id) REFERENCES public.dcim_modulebay(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_module dcim_module_module_type_id_a50b39fc_fk_dcim_moduletype_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_module
+    ADD CONSTRAINT dcim_module_module_type_id_a50b39fc_fk_dcim_moduletype_id FOREIGN KEY (module_type_id) REFERENCES public.dcim_moduletype(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_modulebay dcim_modulebay_device_id_3526abc2_fk_dcim_device_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_modulebay
+    ADD CONSTRAINT dcim_modulebay_device_id_3526abc2_fk_dcim_device_id FOREIGN KEY (device_id) REFERENCES public.dcim_device(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_modulebaytemplate dcim_modulebaytempla_device_type_id_9eaf9bd3_fk_dcim_devi; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_modulebaytemplate
+    ADD CONSTRAINT dcim_modulebaytempla_device_type_id_9eaf9bd3_fk_dcim_devi FOREIGN KEY (device_type_id) REFERENCES public.dcim_devicetype(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_moduletype dcim_moduletype_manufacturer_id_7347392e_fk_dcim_manu; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_moduletype
+    ADD CONSTRAINT dcim_moduletype_manufacturer_id_7347392e_fk_dcim_manu FOREIGN KEY (manufacturer_id) REFERENCES public.dcim_manufacturer(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -13728,6 +15064,14 @@ ALTER TABLE ONLY public.dcim_poweroutlet
 
 
 --
+-- Name: dcim_poweroutlet dcim_poweroutlet_module_id_032f5af2_fk_dcim_module_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_poweroutlet
+    ADD CONSTRAINT dcim_poweroutlet_module_id_032f5af2_fk_dcim_module_id FOREIGN KEY (module_id) REFERENCES public.dcim_module(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: dcim_poweroutlet dcim_poweroutlet_power_port_id_9bdf4163_fk_dcim_powerport_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
 --
 
@@ -13741,6 +15085,14 @@ ALTER TABLE ONLY public.dcim_poweroutlet
 
 ALTER TABLE ONLY public.dcim_poweroutlettemplate
     ADD CONSTRAINT dcim_poweroutlettemp_device_type_id_26b2316c_fk_dcim_devi FOREIGN KEY (device_type_id) REFERENCES public.dcim_devicetype(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_poweroutlettemplate dcim_poweroutlettemp_module_type_id_6142b416_fk_dcim_modu; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_poweroutlettemplate
+    ADD CONSTRAINT dcim_poweroutlettemp_module_type_id_6142b416_fk_dcim_modu FOREIGN KEY (module_type_id) REFERENCES public.dcim_moduletype(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -13800,11 +15152,27 @@ ALTER TABLE ONLY public.dcim_powerport
 
 
 --
+-- Name: dcim_powerport dcim_powerport_module_id_d0c27534_fk_dcim_module_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_powerport
+    ADD CONSTRAINT dcim_powerport_module_id_d0c27534_fk_dcim_module_id FOREIGN KEY (module_id) REFERENCES public.dcim_module(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: dcim_powerporttemplate dcim_powerporttempla_device_type_id_1ddfbfcc_fk_dcim_devi; Type: FK CONSTRAINT; Schema: public; Owner: netbox
 --
 
 ALTER TABLE ONLY public.dcim_powerporttemplate
     ADD CONSTRAINT dcim_powerporttempla_device_type_id_1ddfbfcc_fk_dcim_devi FOREIGN KEY (device_type_id) REFERENCES public.dcim_devicetype(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_powerporttemplate dcim_powerporttempla_module_type_id_93e26849_fk_dcim_modu; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_powerporttemplate
+    ADD CONSTRAINT dcim_powerporttempla_module_type_id_93e26849_fk_dcim_modu FOREIGN KEY (module_type_id) REFERENCES public.dcim_moduletype(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -13888,11 +15256,27 @@ ALTER TABLE ONLY public.dcim_rearport
 
 
 --
+-- Name: dcim_rearport dcim_rearport_module_id_9a7b7e91_fk_dcim_module_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_rearport
+    ADD CONSTRAINT dcim_rearport_module_id_9a7b7e91_fk_dcim_module_id FOREIGN KEY (module_id) REFERENCES public.dcim_module(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: dcim_rearporttemplate dcim_rearporttemplat_device_type_id_6a02fd01_fk_dcim_devi; Type: FK CONSTRAINT; Schema: public; Owner: netbox
 --
 
 ALTER TABLE ONLY public.dcim_rearporttemplate
     ADD CONSTRAINT dcim_rearporttemplat_device_type_id_6a02fd01_fk_dcim_devi FOREIGN KEY (device_type_id) REFERENCES public.dcim_devicetype(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dcim_rearporttemplate dcim_rearporttemplat_module_type_id_4d970e5b_fk_dcim_modu; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.dcim_rearporttemplate
+    ADD CONSTRAINT dcim_rearporttemplat_module_type_id_4d970e5b_fk_dcim_modu FOREIGN KEY (module_type_id) REFERENCES public.dcim_moduletype(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -13992,6 +15376,14 @@ ALTER TABLE ONLY public.extras_configcontext_cluster_groups
 
 
 --
+-- Name: extras_configcontext_cluster_types extras_configcontext_clustertype_id_fa493b64_fk_virtualiz; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.extras_configcontext_cluster_types
+    ADD CONSTRAINT extras_configcontext_clustertype_id_fa493b64_fk_virtualiz FOREIGN KEY (clustertype_id) REFERENCES public.virtualization_clustertype(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: extras_configcontext_platforms extras_configcontext_configcontext_id_2a516699_fk_extras_co; Type: FK CONSTRAINT; Schema: public; Owner: netbox
 --
 
@@ -14069,6 +15461,14 @@ ALTER TABLE ONLY public.extras_configcontext_tenant_groups
 
 ALTER TABLE ONLY public.extras_configcontext_tenants
     ADD CONSTRAINT extras_configcontext_configcontext_id_b53552a6_fk_extras_co FOREIGN KEY (configcontext_id) REFERENCES public.extras_configcontext(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: extras_configcontext_cluster_types extras_configcontext_configcontext_id_d549b6f2_fk_extras_co; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.extras_configcontext_cluster_types
+    ADD CONSTRAINT extras_configcontext_configcontext_id_d549b6f2_fk_extras_co FOREIGN KEY (configcontext_id) REFERENCES public.extras_configcontext(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -14165,6 +15565,14 @@ ALTER TABLE ONLY public.extras_customfield_content_types
 
 ALTER TABLE ONLY public.extras_customfield_content_types
     ADD CONSTRAINT extras_customfield_c_customfield_id_3842aaf3_fk_extras_cu FOREIGN KEY (customfield_id) REFERENCES public.extras_customfield(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: extras_customfield extras_customfield_object_type_id_489f2239_fk_django_co; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.extras_customfield
+    ADD CONSTRAINT extras_customfield_object_type_id_489f2239_fk_django_co FOREIGN KEY (object_type_id) REFERENCES public.django_content_type(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -14813,6 +16221,14 @@ ALTER TABLE ONLY public.virtualization_vminterface_tagged_vlans
 
 ALTER TABLE ONLY public.virtualization_vminterface_tagged_vlans
     ADD CONSTRAINT virtualization_vmint_vminterface_id_904b12de_fk_virtualiz FOREIGN KEY (vminterface_id) REFERENCES public.virtualization_vminterface(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: virtualization_vminterface virtualization_vminterface_vrf_id_4b570a8c_fk_ipam_vrf_id; Type: FK CONSTRAINT; Schema: public; Owner: netbox
+--
+
+ALTER TABLE ONLY public.virtualization_vminterface
+    ADD CONSTRAINT virtualization_vminterface_vrf_id_4b570a8c_fk_ipam_vrf_id FOREIGN KEY (vrf_id) REFERENCES public.ipam_vrf(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
